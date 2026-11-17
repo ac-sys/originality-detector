@@ -1,0 +1,41 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________________ test_real_ensemble_and_paraphrase _______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-box/pytest-5/test_real_ensemble_and_paraphr0')
+
+    def test_real_ensemble_and_paraphrase(tmp_path):
+        import app.config as cfg; cfg.LIGHT_MODE = False
+        import app.ai_detect as ad, app.similarity as sm; ad.LIGHT_MODE = False; sm.LIGHT_MODE = False
+        from app.registry import Registry; from app.extract import split_sentences
+        e = ad.Ensemble(Registry(cfg.MANIFEST))
+        t = "Climate change is one of the most pressing issues of our time. It affects ecosystems, economies, and communities around the world. Addressing it requires coordinated global action."
+>       r = e.analyse(t, split_sentences(t)); assert 0 < r["probability"] < 1 and len(r["sentence_probs"]) == 3 and "verdict" in r
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_models.py:10: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.ai_detect.Ensemble object at 0x7fc0623fc980>
+text = 'Climate change is one of the most pressing issues of our time. It affects ecosystems, economies, and communities around the world. Addressing it requires coordinated global action.'
+sentences = [(0, 63, 'Climate change is one of the most pressing issues of our time.'), (63, 131, 'It affects ecosystems, economies, and communities around the world.'), (131, 180, 'Addressing it requires coordinated global action.')]
+
+    def analyse(self, text, sentences):
+        if not sentences:
+            return {"probability": None, "sentences": [], "disclaimer": DISCLAIMER}
+>       lp, cl, cal = self.features(text, sentences)
+        ^^^^^^^^^^^
+E       ValueError: not enough values to unpack (expected 3, got 2)
+
+app/ai_detect.py:119: ValueError
+----------------------------- Captured stderr call -----------------------------
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 11765.64it/s]
+=============================== warnings summary ===============================
+tests/test_models.py::test_real_ensemble_and_paraphrase
+  /workspace/detector/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_models.py::test_real_ensemble_and_paraphrase - ValueError: ...
+1 failed, 1 warning in 19.71s

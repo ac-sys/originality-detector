@@ -1,0 +1,45 @@
+[
+  {
+    "time": 1792174816.9591281,
+    "dataset": "yaful/MAGE test (streamed, shuffled seed 7), 120-500 words",
+    "n_total": 300,
+    "n_calibration": 100,
+    "n_test": 200,
+    "test_human": 101,
+    "test_ai": 99,
+    "models": {
+      "perplexity": "distilgpt2-ppl@1.0.0",
+      "classifier": "hc3-roberta@1.0.0",
+      "calibration": "default"
+    },
+    "seconds_per_doc": 0.91,
+    "auroc_perplexity_only": 0.688,
+    "auroc_classifier_only": 0.838,
+    "ensemble_default_calibration": {
+      "accuracy": 0.77,
+      "tpr": 0.727,
+      "fpr": 0.188,
+      "auroc": 0.842
+    },
+    "ensemble_fitted_calibration": {
+      "accuracy": 0.77,
+      "tpr": 0.758,
+      "fpr": 0.218,
+      "auroc": 0.838
+    },
+    "ensemble_at_1pct_fpr_threshold": {
+      "accuracy": 0.605,
+      "tpr": 0.222,
+      "fpr": 0.02,
+      "auroc": 0.838,
+      "threshold": 0.822
+    },
+    "fitted": {
+      "weights": {
+        "logprob": 0.011,
+        "clf_logit": 0.2568
+      },
+      "bias": 0.2562
+    }
+  }
+]

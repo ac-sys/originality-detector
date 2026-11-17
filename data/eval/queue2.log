@@ -1,0 +1,7 @@
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+smol test 968 / 1000 s/1000w=57.29
+done smol test s/1000w=47.51
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+smol calib 8 / 500 s/1000w=52.26
+smol calib 88 / 500 s/1000w=17.40
+smol calib 168 / 500 s/1000w=15.13

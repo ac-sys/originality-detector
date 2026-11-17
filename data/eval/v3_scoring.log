@@ -1,0 +1,6 @@
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 10789.72it/s]
+mixed_dev fk False done 45 s 1.71 s/1000w
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 13525.67it/s]
+mixed_dev fk True done 188 s 7.13 s/1000w
+/workspace/detector/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(

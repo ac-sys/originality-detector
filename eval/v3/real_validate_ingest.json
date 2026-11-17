@@ -1,0 +1,66 @@
+{
+ "configs": {
+  "v3.2": {
+   "id": "e5-small-v3match@3.2.0",
+   "dim": 384,
+   "query_prefix": "query: ",
+   "k": 5,
+   "w": 4,
+   "para_threshold": 0.94,
+   "exact_coverage": 0.3,
+   "df_max_frac": 0.01,
+   "df_min": 20,
+   "min_words": 6,
+   "note": "v3.2: v3.1 + gated condense stage + quote-pairing fix. REAL-code test: hard F1 0.890 (v3.1 0.870) clean FPR 0.92%; orig F1 0.957 (0.958) clean FPR 1.52% (1.44%); condense recall 0.421 (0.237). Rollback: registry.rollback()",
+   "version": 3,
+   "seed_threshold": 0.91,
+   "seed_min": 3,
+   "align_threshold": 0.85,
+   "align_pairs": true,
+   "topk": 5,
+   "max_cand_docs": 8,
+   "exclusion": "v31",
+   "condense": {
+    "c_top": 0.9,
+    "c_sim": 0.9,
+    "c_nent": 4,
+    "c_ent": 1.0,
+    "c_nw": 6,
+    "r_top": 0.9
+   }
+  }
+ },
+ "results": {
+  "v3.2": {
+   "hard_test": {
+    "n_docs": 100,
+    "precision": 0.93,
+    "recall": 0.824,
+    "f1": 0.874,
+    "clean_sentence_fpr": 0.0212,
+    "clean_n": 1083,
+    "recall_by_type": {
+     "llm_condense": 0.421,
+     "llm_paraphrase": 0.801,
+     "mosaic": 0.971
+    },
+    "s_per_doc_match": 1.231
+   },
+   "orig_test": {
+    "n_docs": 200,
+    "precision": 0.957,
+    "recall": 0.955,
+    "f1": 0.956,
+    "clean_sentence_fpr": 0.0157,
+    "clean_n": 2362,
+    "recall_by_type": {
+     "backtranslation": 0.949,
+     "light": 0.948,
+     "shuffle": 0.964,
+     "verbatim": 0.959
+    },
+    "s_per_doc_match": 0.764
+   }
+  }
+ }
+}

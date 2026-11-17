@@ -1,0 +1,68 @@
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 2339.45it/s]
+calib done 398 s
+test done 1147 s
+esl done 1869 s
+{
+ "doc": {
+  "n_calib": 800,
+  "n_test": 600,
+  "auroc_test": 0.983,
+  "thresholds": {
+   "fpr_1pct": 5.6705,
+   "fpr_2pct": 5.3989
+  },
+  "test_tpr_fpr_1pct": 0.891,
+  "test_fpr_fpr_1pct": 0.036,
+  "esl_fpr_fpr_1pct": {
+   "esl_ellipse": 0.0,
+   "esl_icnale": 0.0,
+   "esl_toefl": 0.121,
+   "native_hewlett": 0.0
+  },
+  "test_tpr_fpr_2pct": 0.901,
+  "test_fpr_fpr_2pct": 0.042,
+  "esl_fpr_fpr_2pct": {
+   "esl_ellipse": 0.0,
+   "esl_icnale": 0.0,
+   "esl_toefl": 0.143,
+   "native_hewlett": 0.0
+  },
+  "esl_fpr_at_balanced_p0.5": {
+   "esl_ellipse": 0.0,
+   "esl_icnale": 0.0,
+   "esl_toefl": 0.121,
+   "native_hewlett": 0.0
+  }
+ },
+ "win": {
+  "n_calib": 2564,
+  "n_test": 2114,
+  "auroc_test": 0.9261,
+  "thresholds": {
+   "fpr_1pct": 7.7161,
+   "fpr_2pct": 6.5813
+  },
+  "test_tpr_fpr_1pct": 0.446,
+  "test_fpr_fpr_1pct": 0.004,
+  "esl_fpr_fpr_1pct": {
+   "esl_ellipse": 0.003,
+   "esl_icnale": 0.013,
+   "esl_toefl": 0.011,
+   "native_hewlett": 0.0
+  },
+  "test_tpr_fpr_2pct": 0.575,
+  "test_fpr_fpr_2pct": 0.013,
+  "esl_fpr_fpr_2pct": {
+   "esl_ellipse": 0.005,
+   "esl_icnale": 0.024,
+   "esl_toefl": 0.038,
+   "native_hewlett": 0.003
+  },
+  "esl_fpr_at_balanced_p0.5": {
+   "esl_ellipse": 0.035,
+   "esl_icnale": 0.088,
+   "esl_toefl": 0.202,
+   "native_hewlett": 0.014
+  }
+ }
+}

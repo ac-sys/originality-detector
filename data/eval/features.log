@@ -1,0 +1,70 @@
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 9896.41it/s]
+fakespot esl 8 / 507 s/1000w=0.89
+fakespot esl 88 / 507 s/1000w=0.84
+fakespot esl 168 / 507 s/1000w=0.79
+fakespot esl 248 / 507 s/1000w=0.76
+fakespot esl 328 / 507 s/1000w=0.75
+fakespot esl 408 / 507 s/1000w=0.75
+fakespot esl 488 / 507 s/1000w=0.76
+done fakespot esl s/1000w=0.76
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 11515.42it/s]
+fakespot test 8 / 1500 s/1000w=1.92
+fakespot test 88 / 1500 s/1000w=1.23
+fakespot test 168 / 1500 s/1000w=1.10
+fakespot test 248 / 1500 s/1000w=1.05
+fakespot test 328 / 1500 s/1000w=1.02
+fakespot test 408 / 1500 s/1000w=0.99
+fakespot test 488 / 1500 s/1000w=0.98
+fakespot test 568 / 1500 s/1000w=0.95
+fakespot test 648 / 1500 s/1000w=0.94
+fakespot test 728 / 1500 s/1000w=0.96
+fakespot test 808 / 1500 s/1000w=1.01
+fakespot test 888 / 1500 s/1000w=1.08
+fakespot test 968 / 1500 s/1000w=1.13
+fakespot test 1048 / 1500 s/1000w=1.18
+fakespot test 1128 / 1500 s/1000w=1.22
+fakespot test 1208 / 1500 s/1000w=1.25
+fakespot test 1288 / 1500 s/1000w=1.28
+fakespot test 1368 / 1500 s/1000w=1.31
+fakespot test 1448 / 1500 s/1000w=1.33
+done fakespot test s/1000w=1.34
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 12378.94it/s]
+fakespot calib 8 / 800 s/1000w=2.19
+fakespot calib 88 / 800 s/1000w=1.94
+fakespot calib 168 / 800 s/1000w=1.88
+fakespot calib 248 / 800 s/1000w=1.87
+fakespot calib 328 / 800 s/1000w=1.87
+fakespot calib 408 / 800 s/1000w=1.87
+fakespot calib 488 / 800 s/1000w=1.86
+fakespot calib 568 / 800 s/1000w=1.84
+fakespot calib 648 / 800 s/1000w=1.72
+fakespot calib 728 / 800 s/1000w=1.64
+done fakespot calib s/1000w=1.57
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 12412.84it/s]
+fakespot train 8 / 1500 s/1000w=1.38
+fakespot train 88 / 1500 s/1000w=0.96
+fakespot train 168 / 1500 s/1000w=0.97
+fakespot train 248 / 1500 s/1000w=0.99
+fakespot train 328 / 1500 s/1000w=1.01
+fakespot train 408 / 1500 s/1000w=0.99
+fakespot train 488 / 1500 s/1000w=0.98
+fakespot train 568 / 1500 s/1000w=0.96
+fakespot train 648 / 1500 s/1000w=0.96
+fakespot train 728 / 1500 s/1000w=0.94
+fakespot train 808 / 1500 s/1000w=0.94
+fakespot train 888 / 1500 s/1000w=0.95
+fakespot train 968 / 1500 s/1000w=2.20
+fakespot train 1048 / 1500 s/1000w=2.23
+fakespot train 1128 / 1500 s/1000w=2.25
+fakespot train 1208 / 1500 s/1000w=2.25
+fakespot train 1288 / 1500 s/1000w=2.25
+fakespot train 1368 / 1500 s/1000w=2.25
+fakespot train 1448 / 1500 s/1000w=2.22
+done fakespot train s/1000w=2.22
+Loading weights:   0%|          | 0/76 [00:00<?, ?it/s]Loading weights: 100%|██████████| 76/76 [00:00<00:00, 2896.33it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 32417.72it/s]
+v1 esl 8 / 507 s/1000w=13.11
+v1 esl 88 / 507 s/1000w=27.63
+v1 esl 168 / 507 s/1000w=22.76
+v1 esl 248 / 507 s/1000w=19.46

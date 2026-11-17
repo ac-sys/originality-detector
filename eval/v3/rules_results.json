@@ -1,0 +1,236 @@
+{
+ "per_model_thresholds": {
+  "fk": {
+   "0.01": 6.299402389526354,
+   "0.02": 5.327504882812494
+  },
+  "dk": {
+   "0.01": 2.5609021663665676,
+   "0.02": 1.792299027442932
+  }
+ },
+ "test|v2|1pct": {
+  "tpr": 0.895,
+  "fpr": 0.035,
+  "human_by_source": {
+   "mage_ood_gpt4": 0.483,
+   "mage_ood_gpt4_para": 0.464,
+   "mage_test": 0.384,
+   "raid": 0.795
+  }
+ },
+ "test|v2|2pct": {
+  "tpr": 0.902,
+  "fpr": 0.035,
+  "human_by_source": {
+   "mage_ood_gpt4": 0.483,
+   "mage_ood_gpt4_para": 0.464,
+   "mage_test": 0.404,
+   "raid": 0.795
+  }
+ },
+ "test|fusion|1pct": {
+  "tpr": 0.944,
+  "fpr": 0.026,
+  "human_by_source": {
+   "mage_ood_gpt4": 0.414,
+   "mage_ood_gpt4_para": 0.429,
+   "mage_test": 0.485,
+   "raid": 0.82
+  }
+ },
+ "test|fusion|2pct": {
+  "tpr": 0.968,
+  "fpr": 0.078,
+  "human_by_source": {
+   "mage_ood_gpt4": 0.483,
+   "mage_ood_gpt4_para": 0.536,
+   "mage_test": 0.495,
+   "raid": 0.848
+  }
+ },
+ "test|and(fk,dk)|1pct": {
+  "tpr": 0.832,
+  "fpr": 0.009,
+  "human_by_source": {
+   "mage_ood_gpt4": 0.414,
+   "mage_ood_gpt4_para": 0.393,
+   "mage_test": 0.354,
+   "raid": 0.738
+  }
+ },
+ "test|and(fk,dk)|2pct": {
+  "tpr": 0.884,
+  "fpr": 0.009,
+  "human_by_source": {
+   "mage_ood_gpt4": 0.414,
+   "mage_ood_gpt4_para": 0.429,
+   "mage_test": 0.404,
+   "raid": 0.775
+  }
+ },
+ "test|and(fusion,fk,dk)|1pct": {
+  "tpr": 0.832,
+  "fpr": 0.009,
+  "human_by_source": {
+   "mage_ood_gpt4": 0.414,
+   "mage_ood_gpt4_para": 0.393,
+   "mage_test": 0.354,
+   "raid": 0.738
+  }
+ },
+ "test|and(fusion,fk,dk)|2pct": {
+  "tpr": 0.884,
+  "fpr": 0.009,
+  "human_by_source": {
+   "mage_ood_gpt4": 0.414,
+   "mage_ood_gpt4_para": 0.429,
+   "mage_test": 0.404,
+   "raid": 0.775
+  }
+ },
+ "esl|v2|1pct": {
+  "fpr": 0.022,
+  "human_by_source": {
+   "esl_ellipse": 0.0,
+   "esl_icnale": 0.0,
+   "esl_toefl": 0.121,
+   "native_hewlett": 0.0
+  }
+ },
+ "esl|v2|2pct": {
+  "fpr": 0.026,
+  "human_by_source": {
+   "esl_ellipse": 0.0,
+   "esl_icnale": 0.0,
+   "esl_toefl": 0.143,
+   "native_hewlett": 0.0
+  }
+ },
+ "esl|fusion|1pct": {
+  "fpr": 0.039,
+  "human_by_source": {
+   "esl_ellipse": 0.0,
+   "esl_icnale": 0.013,
+   "esl_toefl": 0.209,
+   "native_hewlett": 0.0
+  }
+ },
+ "esl|fusion|2pct": {
+  "fpr": 0.063,
+  "human_by_source": {
+   "esl_ellipse": 0.0,
+   "esl_icnale": 0.025,
+   "esl_toefl": 0.33,
+   "native_hewlett": 0.0
+  }
+ },
+ "esl|and(fk,dk)|1pct": {
+  "fpr": 0.01,
+  "human_by_source": {
+   "esl_ellipse": 0.0,
+   "esl_icnale": 0.0,
+   "esl_toefl": 0.055,
+   "native_hewlett": 0.0
+  }
+ },
+ "esl|and(fk,dk)|2pct": {
+  "fpr": 0.02,
+  "human_by_source": {
+   "esl_ellipse": 0.0,
+   "esl_icnale": 0.0,
+   "esl_toefl": 0.11,
+   "native_hewlett": 0.0
+  }
+ },
+ "esl|and(fusion,fk,dk)|1pct": {
+  "fpr": 0.01,
+  "human_by_source": {
+   "esl_ellipse": 0.0,
+   "esl_icnale": 0.0,
+   "esl_toefl": 0.055,
+   "native_hewlett": 0.0
+  }
+ },
+ "esl|and(fusion,fk,dk)|2pct": {
+  "fpr": 0.02,
+  "human_by_source": {
+   "esl_ellipse": 0.0,
+   "esl_icnale": 0.0,
+   "esl_toefl": 0.11,
+   "native_hewlett": 0.0
+  }
+ },
+ "academic|v2|1pct": {
+  "tpr": 0.974,
+  "fpr": 0.4,
+  "gpt4polished_flag": 0.978,
+  "human_by_source": {
+   "CS224N_real_145": 0.572,
+   "CollegeEssay_real_70": 0.043
+  }
+ },
+ "academic|v2|2pct": {
+  "tpr": 0.98,
+  "fpr": 0.447,
+  "gpt4polished_flag": 0.978,
+  "human_by_source": {
+   "CS224N_real_145": 0.641,
+   "CollegeEssay_real_70": 0.043
+  }
+ },
+ "academic|fusion|1pct": {
+  "tpr": 0.969,
+  "fpr": 0.247,
+  "gpt4polished_flag": 0.989,
+  "human_by_source": {
+   "CS224N_real_145": 0.345,
+   "CollegeEssay_real_70": 0.043
+  }
+ },
+ "academic|fusion|2pct": {
+  "tpr": 0.986,
+  "fpr": 0.419,
+  "gpt4polished_flag": 1.0,
+  "human_by_source": {
+   "CS224N_real_145": 0.572,
+   "CollegeEssay_real_70": 0.1
+  }
+ },
+ "academic|and(fk,dk)|1pct": {
+  "tpr": 0.886,
+  "fpr": 0.074,
+  "gpt4polished_flag": 0.956,
+  "human_by_source": {
+   "CS224N_real_145": 0.103,
+   "CollegeEssay_real_70": 0.014
+  }
+ },
+ "academic|and(fk,dk)|2pct": {
+  "tpr": 0.929,
+  "fpr": 0.144,
+  "gpt4polished_flag": 0.978,
+  "human_by_source": {
+   "CS224N_real_145": 0.193,
+   "CollegeEssay_real_70": 0.043
+  }
+ },
+ "academic|and(fusion,fk,dk)|1pct": {
+  "tpr": 0.886,
+  "fpr": 0.074,
+  "gpt4polished_flag": 0.956,
+  "human_by_source": {
+   "CS224N_real_145": 0.103,
+   "CollegeEssay_real_70": 0.014
+  }
+ },
+ "academic|and(fusion,fk,dk)|2pct": {
+  "tpr": 0.929,
+  "fpr": 0.144,
+  "gpt4polished_flag": 0.978,
+  "human_by_source": {
+   "CS224N_real_145": 0.193,
+   "CollegeEssay_real_70": 0.043
+  }
+ }
+}

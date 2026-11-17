@@ -1,0 +1,5 @@
+excluded filler docs 801
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8754.91it/s]
+library embedded 46831 250 s
+v2 {"orig_test": {"precision": 0.963, "recall": 0.945, "f1": 0.954, "recall_by_type": {"backtranslation": 0.93, "light": 0.939, "shuffle": 0.948, "verbatim": 0.963}, "n_plag": 1004, "quoted_flagged": "2/60", "bibliography_flagged": "0/220", "clean_sentence_fpr": 0.0131, "check_s_per_1000w": 0.603}, "hard_test": {"precision": 0.961, "recall": 0.762, "f1": 0.85, "recall_by_type": {"llm_condense": 0.395, "llm_paraphrase": 0.692, "mosaic": 0.971}, "n_plag": 387, "quoted_flagged": "0/0", "bibliography_flagged": "0/0", "clean_sentence_fpr": 0.0102, "check_s_per_1000w": 0.538}}

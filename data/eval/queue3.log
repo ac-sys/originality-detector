@@ -1,0 +1,335 @@
+[transformers] Could not extract SentencePiece model from /home/box/.cache/huggingface/hub/models--microsoft--deberta-v3-small/snapshots/a36c739020e01763fe789b4b85e2df55d6180012/spm.model using sentencepiece library due to 
+SentencePieceExtractor requires the protobuf library but it was not found in your environment. Check out the instructions on the
+installation page of its repo: https://github.com/protocolbuffers/protobuf/tree/master/python#installation and follow the ones
+that match your environment. Please note that you may need to restart your runtime after installation.
+. Falling back to TikToken extractor.
+Traceback (most recent call last):
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/convert_slow_tokenizer.py", line 1937, in load_tiktoken_bpe
+    from tiktoken.load import load_tiktoken_bpe
+ModuleNotFoundError: No module named 'tiktoken'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/detector/eval/finetune_deberta.py", line 10, in <module>
+    tok = AutoTokenizer.from_pretrained("microsoft/deberta-v3-small")
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/models/auto/tokenization_auto.py", line 984, in from_pretrained
+    return tokenizer_class.from_pretrained(pretrained_model_name_or_path, *inputs, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/tokenization_utils_base.py", line 1750, in from_pretrained
+    return cls._from_pretrained(
+           ~~~~~~~~~~~~~~~~~~~~^
+        resolved_vocab_files,
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/tokenization_utils_base.py", line 1941, in _from_pretrained
+    init_kwargs = cls.convert_to_native_format(**init_kwargs)
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/tokenization_utils_tokenizers.py", line 225, in convert_to_native_format
+    local_kwargs = cls._convert_from_tiktoken(vocab_file, local_kwargs)
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/tokenization_utils_tokenizers.py", line 286, in _convert_from_tiktoken
+    base_vocab_size = len(TikTokenConverter.load_tiktoken_bpe(vocab_file))
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/convert_slow_tokenizer.py", line 1939, in load_tiktoken_bpe
+    raise ValueError(
+        "`tiktoken` is required to read a `tiktoken` file. Install it with `pip install tiktoken`."
+    )
+ValueError: `tiktoken` is required to read a `tiktoken` file. Install it with `pip install tiktoken`.
+Traceback (most recent call last):
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 85, in _inner_fn
+    validate_repo_id(arg_value)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 133, in validate_repo_id
+    raise HFValidationError(
+    ...<2 lines>...
+    )
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/workspace/detector/models/local/deberta-small-detector-v2'. Use `repo_type` argument if needed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/models/auto/tokenization_auto.py", line 801, in from_pretrained
+    config = AutoConfig.from_pretrained(
+        pretrained_model_name_or_path, trust_remote_code=trust_remote_code, **kwargs
+    )
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/models/auto/configuration_auto.py", line 397, in from_pretrained
+    config_dict, unused_kwargs = PreTrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 919, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 971, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 595, in cached_files
+    raise OSError(f"{e}") from e
+OSError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/workspace/detector/models/local/deberta-small-detector-v2'. Use `repo_type` argument if needed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 85, in _inner_fn
+    validate_repo_id(arg_value)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 133, in validate_repo_id
+    raise HFValidationError(
+    ...<2 lines>...
+    )
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/workspace/detector/models/local/deberta-small-detector-v2'. Use `repo_type` argument if needed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/detector/eval/run_features.py", line 38, in <module>
+    fn = make(name); t0 = time.time(); words = 0
+  File "/workspace/detector/eval/run_features.py", line 17, in make
+    m = Classifier(str(pathlib.Path(__file__).resolve().parent.parent / "models/local/deberta-small-detector-v2"), "deb", ai_label="ai", maxlen=256)
+  File "/workspace/detector/eval/features.py", line 49, in __init__
+    self.tok = AutoTokenizer.from_pretrained(hf_id); self.n = name; self.maxlen = maxlen
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/models/auto/tokenization_auto.py", line 805, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 869, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 919, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 971, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 595, in cached_files
+    raise OSError(f"{e}") from e
+OSError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/workspace/detector/models/local/deberta-small-detector-v2'. Use `repo_type` argument if needed.
+Traceback (most recent call last):
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 85, in _inner_fn
+    validate_repo_id(arg_value)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 133, in validate_repo_id
+    raise HFValidationError(
+    ...<2 lines>...
+    )
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/workspace/detector/models/local/deberta-small-detector-v2'. Use `repo_type` argument if needed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/models/auto/tokenization_auto.py", line 801, in from_pretrained
+    config = AutoConfig.from_pretrained(
+        pretrained_model_name_or_path, trust_remote_code=trust_remote_code, **kwargs
+    )
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/models/auto/configuration_auto.py", line 397, in from_pretrained
+    config_dict, unused_kwargs = PreTrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 919, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 971, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 595, in cached_files
+    raise OSError(f"{e}") from e
+OSError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/workspace/detector/models/local/deberta-small-detector-v2'. Use `repo_type` argument if needed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 85, in _inner_fn
+    validate_repo_id(arg_value)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 133, in validate_repo_id
+    raise HFValidationError(
+    ...<2 lines>...
+    )
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/workspace/detector/models/local/deberta-small-detector-v2'. Use `repo_type` argument if needed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/detector/eval/run_features.py", line 38, in <module>
+    fn = make(name); t0 = time.time(); words = 0
+  File "/workspace/detector/eval/run_features.py", line 17, in make
+    m = Classifier(str(pathlib.Path(__file__).resolve().parent.parent / "models/local/deberta-small-detector-v2"), "deb", ai_label="ai", maxlen=256)
+  File "/workspace/detector/eval/features.py", line 49, in __init__
+    self.tok = AutoTokenizer.from_pretrained(hf_id); self.n = name; self.maxlen = maxlen
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/models/auto/tokenization_auto.py", line 805, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 869, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 919, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 971, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 595, in cached_files
+    raise OSError(f"{e}") from e
+OSError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/workspace/detector/models/local/deberta-small-detector-v2'. Use `repo_type` argument if needed.
+Traceback (most recent call last):
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 85, in _inner_fn
+    validate_repo_id(arg_value)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 133, in validate_repo_id
+    raise HFValidationError(
+    ...<2 lines>...
+    )
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/workspace/detector/models/local/deberta-small-detector-v2'. Use `repo_type` argument if needed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/models/auto/tokenization_auto.py", line 801, in from_pretrained
+    config = AutoConfig.from_pretrained(
+        pretrained_model_name_or_path, trust_remote_code=trust_remote_code, **kwargs
+    )
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/models/auto/configuration_auto.py", line 397, in from_pretrained
+    config_dict, unused_kwargs = PreTrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 919, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 971, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 595, in cached_files
+    raise OSError(f"{e}") from e
+OSError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/workspace/detector/models/local/deberta-small-detector-v2'. Use `repo_type` argument if needed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 85, in _inner_fn
+    validate_repo_id(arg_value)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 133, in validate_repo_id
+    raise HFValidationError(
+    ...<2 lines>...
+    )
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/workspace/detector/models/local/deberta-small-detector-v2'. Use `repo_type` argument if needed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/detector/eval/run_features.py", line 38, in <module>
+    fn = make(name); t0 = time.time(); words = 0
+  File "/workspace/detector/eval/run_features.py", line 17, in make
+    m = Classifier(str(pathlib.Path(__file__).resolve().parent.parent / "models/local/deberta-small-detector-v2"), "deb", ai_label="ai", maxlen=256)
+  File "/workspace/detector/eval/features.py", line 49, in __init__
+    self.tok = AutoTokenizer.from_pretrained(hf_id); self.n = name; self.maxlen = maxlen
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/models/auto/tokenization_auto.py", line 805, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 869, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 919, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/configuration_utils.py", line 971, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/workspace/detector/.venv/lib/python3.13/site-packages/transformers/utils/hub.py", line 595, in cached_files
+    raise OSError(f"{e}") from e
+OSError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/workspace/detector/models/local/deberta-small-detector-v2'. Use `repo_type` argument if needed.
+desklib calib 8 / 300 s/1000w=18.98
+desklib calib 88 / 300 s/1000w=20.13
+desklib calib 168 / 300 s/1000w=18.97
+desklib calib 248 / 300 s/1000w=18.51
+done desklib calib s/1000w=17.92
+desklib esl 8 / 507 s/1000w=4.34
+desklib esl 88 / 507 s/1000w=5.94

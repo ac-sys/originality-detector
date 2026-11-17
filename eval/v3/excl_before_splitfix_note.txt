@@ -1,0 +1,27 @@
+{
+ "plain_false_exclusion": 0.0,
+ "n_plain": 989,
+ "quote_exclusion_rate": 0.487,
+ "quote_by_style": {
+  "block": "0/85",
+  "block_gt": "0/67",
+  "curly": "77/77",
+  "long_lead": "71/71",
+  "mid_sentence": "68/71",
+  "single": "0/67",
+  "single_curly": "0/86",
+  "straight": "76/76"
+ },
+ "ref_line_exclusion_rate": 0.755,
+ "ref_by_style": {
+  "Bibliography": "492/492",
+  "Literature Cited": "0/623",
+  "REFERENCES": "624/624",
+  "Reference List": "416/416",
+  "References": "375/375",
+  "References:": "372/372",
+  "Sources": "368/368",
+  "Works Cited": "440/440",
+  "numbered_noheader": "0/380"
+ }
+}

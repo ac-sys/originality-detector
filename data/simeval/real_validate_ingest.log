@@ -1,0 +1,52 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 12886.22it/s]
+extra docs 1120 sentences 24430 ingest_s 274 library sentences 71307
+hard_test 20 47 s
+hard_test 40 85 s
+hard_test 60 116 s
+hard_test 80 143 s
+hard_test 100 176 s
+orig_test 20 25 s
+orig_test 40 41 s
+orig_test 60 67 s
+orig_test 80 91 s
+orig_test 100 118 s
+orig_test 120 135 s
+orig_test 140 153 s
+orig_test 160 174 s
+orig_test 180 188 s
+orig_test 200 206 s
+{
+ "v3.2": {
+  "hard_test": {
+   "n_docs": 100,
+   "precision": 0.93,
+   "recall": 0.824,
+   "f1": 0.874,
+   "clean_sentence_fpr": 0.0212,
+   "clean_n": 1083,
+   "recall_by_type": {
+    "llm_condense": 0.421,
+    "llm_paraphrase": 0.801,
+    "mosaic": 0.971
+   },
+   "s_per_doc_match": 1.231
+  },
+  "orig_test": {
+   "n_docs": 200,
+   "precision": 0.957,
+   "recall": 0.955,
+   "f1": 0.956,
+   "clean_sentence_fpr": 0.0157,
+   "clean_n": 2362,
+   "recall_by_type": {
+    "backtranslation": 0.949,
+    "light": 0.948,
+    "shuffle": 0.964,
+    "verbatim": 0.959
+   },
+   "s_per_doc_match": 0.764
+  }
+ }
+}
+ALLDONE

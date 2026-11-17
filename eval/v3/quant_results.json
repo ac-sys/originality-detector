@@ -1,0 +1,37 @@
+{
+ "n_docs": 200,
+ "fk": {
+  "chunks": 200,
+  "corr": 0.9033,
+  "mean_abs_diff": 2.055,
+  "auroc_fp32": 0.9628,
+  "auroc_int8": 0.9559,
+  "s_per_1000w_fp32": 0.61,
+  "s_per_1000w_int8": 0.46,
+  "rss_model_load_mb": 155
+ },
+ "dk": {
+  "chunks": 200,
+  "corr": 0.4975,
+  "mean_abs_diff": 4.351,
+  "auroc_fp32": 0.9776,
+  "auroc_int8": 0.7951,
+  "s_per_1000w_fp32": 3.88,
+  "s_per_1000w_int8": 3.7,
+  "rss_model_load_mb": 2674
+ },
+ "and_rule_fpr_1pct": {
+  "agreement": 0.845,
+  "tpr_fp32": 0.812,
+  "tpr_int8": 0.664,
+  "fpr_fp32": 0.02,
+  "fpr_int8": 0.0
+ },
+ "and_rule_fpr_2pct": {
+  "agreement": 0.83,
+  "tpr_fp32": 0.879,
+  "tpr_int8": 0.698,
+  "fpr_fp32": 0.02,
+  "fpr_int8": 0.0
+ }
+}

@@ -1,0 +1,13 @@
+v1_ensemble 0.6147 0.049 0.105 {'esl_ellipse': 0.052, 'esl_icnale': 0.05, 'esl_toefl': 0.099, 'native_hewlett': 0.0}
+v1_roberta_hc3 0.6156 0.049 0.102 {'esl_ellipse': 0.052, 'esl_icnale': 0.05, 'esl_toefl': 0.099, 'native_hewlett': 0.0}
+v1_distilgpt2_logprob 0.6675 0.291 0.377 {'esl_ellipse': 0.06, 'esl_icnale': 0.125, 'esl_toefl': 0.121, 'native_hewlett': 0.023}
+fakespot_roberta 0.963 0.785 0.802 {'esl_ellipse': 0.0, 'esl_icnale': 0.0, 'esl_toefl': 0.055, 'native_hewlett': 0.0}
+smol_binoculars 0.6349 0.306 0.379 {'esl_ellipse': 0.012, 'esl_icnale': 0.0, 'esl_toefl': 0.088, 'native_hewlett': 0.0}
+smol_fastdetect_1model 0.6674 0.381 0.418 {'esl_ellipse': 0.02, 'esl_icnale': 0.0, 'esl_toefl': 0.066, 'native_hewlett': 0.0}
+smol_fastdetect_ref_inst 0.6194 0.226 0.269 {'esl_ellipse': 0.008, 'esl_icnale': 0.0, 'esl_toefl': 0.0, 'native_hewlett': 0.0}
+stack_lr_all 0.963 0.785 0.802 {'esl_ellipse': 0.0, 'esl_icnale': 0.0, 'esl_toefl': 0.055, 'native_hewlett': 0.0}
+stack_lr_no_v1 0.963 0.785 0.802 {'esl_ellipse': 0.0, 'esl_icnale': 0.0, 'esl_toefl': 0.055, 'native_hewlett': 0.0}
+stack_lr_fakespot+smol 0.963 0.785 0.802 {'esl_ellipse': 0.0, 'esl_icnale': 0.0, 'esl_toefl': 0.055, 'native_hewlett': 0.0}
+stack_gbm_all 0.962 0.753 0.797 {'esl_ellipse': 0.0, 'esl_icnale': 0.013, 'esl_toefl': 0.066, 'native_hewlett': 0.0}
+stack_gbm_no_v1 0.962 0.753 0.797 {'esl_ellipse': 0.0, 'esl_icnale': 0.013, 'esl_toefl': 0.066, 'native_hewlett': 0.0}
+stack_gbm_fakespot+smol 0.962 0.753 0.797 {'esl_ellipse': 0.0, 'esl_icnale': 0.013, 'esl_toefl': 0.066, 'native_hewlett': 0.0}

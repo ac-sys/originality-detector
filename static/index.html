@@ -1,0 +1,33 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Originality Detector</title><style>
+body{font-family:system-ui,sans-serif;max-width:980px;margin:20px auto;padding:0 12px;color:#222}
+.card{border:1px solid #ddd;border-radius:8px;padding:14px;margin:12px 0}
+.big{font-size:32px;font-weight:700}.row{display:flex;gap:12px;flex-wrap:wrap}.row .card{flex:1;min-width:200px}
+.ex{background:#ffd6d6}.pa{background:#ffe9b3}.ai{background:#dcd6ff}.s{cursor:help}
+small{color:#666}button{padding:8px 14px}#bar{height:8px;background:#eee;border-radius:4px}#bar div{height:8px;background:#3a7;border-radius:4px;width:0}
+</style></head><body>
+<h2>Originality Detector <small>similarity + AI-writing evidence (MVP)</small></h2>
+<div class="card"><form id="f"><input type="file" name="file" accept=".pdf,.docx,.txt" required>
+<input name="title" placeholder="Title (optional)"> <label><input type="checkbox" name="add" checked> add to library</label>
+<button>Check</button></form><div id="st"></div><div id="bar"><div></div></div></div>
+<div id="out"></div>
+<div class="card"><b>Models</b> <small id="models"></small></div>
+<script>
+const $=s=>document.querySelector(s);
+fetch('/api/health').then(r=>r.json()).then(h=>$('#models').textContent=JSON.stringify(h.models)+' | library docs: '+h.library_docs);
+$('#f').onsubmit=async e=>{e.preventDefault();const fd=new FormData();const f=e.target;
+ fd.append('file',f.file.files[0]);fd.append('title',f.title.value);fd.append('add_to_library',f.add.checked);
+ const {job_id}=await (await fetch('/api/submit',{method:'POST',body:fd})).json();poll(job_id)};
+async function poll(id){const j=await (await fetch('/api/jobs/'+id)).json();$('#st').textContent=j.status+(j.sentences?' ('+j.sentences+' sentences)':'')+(j.error?': '+j.error:'');
+ $('#bar div').style.width=(j.progress*100)+'%';if(j.status=='done')show(id);else if(j.status!='error')setTimeout(()=>poll(id),1000)}
+const esc=t=>t.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+async function show(id){const r=await (await fetch('/api/reports/'+id)).json();const a=r.ai,s=r.similarity;
+ let h=`<div class="row"><div class="card"><small>Similarity</small><div class="big">${s.percent}%</div><small>exact ${s.exact_percent}% · paraphrase ${s.paraphrase_percent}% · excluded ${s.excluded_percent||0}%</small>${s.web&&s.web.enabled?'<br><small>web matches: '+s.web.matches.length+'</small>':''}</div>
+ <div class="card"><small>AI-writing likelihood</small><div class="big">${a.probability==null?'n/a':Math.round(a.probability*100)+'%'}</div><small>± ${Math.round(a.uncertainty*100)} pts · ${Math.round(a.share_flagged*100)}% of text AI-like ${a.verdict_text?'<br><b>'+esc(a.verdict_text)+'</b>':''} ${a.low_confidence?'· <b>low confidence (short text)</b>':''}</small></div></div>
+ <div class="card"><small><i>${esc(a.disclaimer)}</i></small><br><a href="/api/reports/${id}/pdf">Download PDF report</a> · <a href="#" onclick="appeal('${id}');return false">Lodge an appeal</a></div>`;
+ if(s.sources.length)h+='<div class="card"><b>Matched sources</b><ul>'+s.sources.map(x=>`<li>#${x.doc} ${esc(x.title)} — ${x.percent}%</li>`).join('')+'</ul></div>';
+ h+='<div class="card"><b>Evidence</b> <small><span class="ex">exact</span> <span class="pa">paraphrase</span> <span class="ai">AI-like</span> — hover a sentence for details</small><p>'+
+ r.sentences.map(x=>{let c='',t='AI '+x.ai_prob;if(x.exact){c='ex';t='exact match: #'+x.exact.doc+' '+x.exact.title}else if(x.paraphrase){c='pa';t='paraphrase '+x.paraphrase.score+' of #'+x.paraphrase.doc+': '+x.paraphrase.matched_text}else if(x.excluded){t='excluded: '+x.excluded}else if(x.ai_flag){c='ai';t='AI-like passage, p='+x.ai_prob};if(x.exact)t+=' | source: '+(x.exact.matched_text||'');
+ return `<span class="s ${c}" title="${esc(t).replace(/"/g,'&quot;')}">${esc(x.text)}</span> `}).join('')+'</p></div>';$('#out').innerHTML=h}
+async function appeal(id){const reason=prompt('Reason for appeal');if(!reason)return;await fetch('/api/appeals/'+id,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reason})});alert('Appeal recorded for human review')}
+</script></body></html>

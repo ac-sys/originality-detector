@@ -1,0 +1,1011 @@
+{
+  "k3_w3_cov0.2": {
+    "dev": {
+      "precision": 0.699,
+      "recall": 0.834,
+      "f1": 0.761,
+      "recall_by_type": {
+        "backtranslation": 0.856,
+        "light": 0.793,
+        "shuffle": 0.705,
+        "verbatim": 0.98
+      },
+      "quoted_flagged": "2/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.674,
+      "recall": 0.865,
+      "f1": 0.757,
+      "recall_by_type": {
+        "backtranslation": 0.833,
+        "light": 0.823,
+        "shuffle": 0.827,
+        "verbatim": 0.966
+      },
+      "quoted_flagged": "5/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k3_w3_cov0.3": {
+    "dev": {
+      "precision": 0.835,
+      "recall": 0.791,
+      "f1": 0.812,
+      "recall_by_type": {
+        "backtranslation": 0.788,
+        "light": 0.752,
+        "shuffle": 0.653,
+        "verbatim": 0.98
+      },
+      "quoted_flagged": "2/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.802,
+      "recall": 0.835,
+      "f1": 0.818,
+      "recall_by_type": {
+        "backtranslation": 0.79,
+        "light": 0.788,
+        "shuffle": 0.782,
+        "verbatim": 0.966
+      },
+      "quoted_flagged": "2/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k3_w3_cov0.5": {
+    "dev": {
+      "precision": 0.919,
+      "recall": 0.639,
+      "f1": 0.754,
+      "recall_by_type": {
+        "backtranslation": 0.553,
+        "light": 0.587,
+        "shuffle": 0.474,
+        "verbatim": 0.98
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.881,
+      "recall": 0.68,
+      "f1": 0.768,
+      "recall_by_type": {
+        "backtranslation": 0.576,
+        "light": 0.597,
+        "shuffle": 0.556,
+        "verbatim": 0.966
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k3_w4_cov0.2": {
+    "dev": {
+      "precision": 0.685,
+      "recall": 0.762,
+      "f1": 0.722,
+      "recall_by_type": {
+        "backtranslation": 0.758,
+        "light": 0.711,
+        "shuffle": 0.611,
+        "verbatim": 0.98
+      },
+      "quoted_flagged": "2/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.677,
+      "recall": 0.816,
+      "f1": 0.74,
+      "recall_by_type": {
+        "backtranslation": 0.79,
+        "light": 0.753,
+        "shuffle": 0.742,
+        "verbatim": 0.963
+      },
+      "quoted_flagged": "5/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k3_w4_cov0.3": {
+    "dev": {
+      "precision": 0.823,
+      "recall": 0.738,
+      "f1": 0.778,
+      "recall_by_type": {
+        "backtranslation": 0.727,
+        "light": 0.678,
+        "shuffle": 0.579,
+        "verbatim": 0.98
+      },
+      "quoted_flagged": "1/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.776,
+      "recall": 0.785,
+      "f1": 0.781,
+      "recall_by_type": {
+        "backtranslation": 0.735,
+        "light": 0.74,
+        "shuffle": 0.685,
+        "verbatim": 0.963
+      },
+      "quoted_flagged": "2/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k3_w4_cov0.5": {
+    "dev": {
+      "precision": 0.889,
+      "recall": 0.608,
+      "f1": 0.722,
+      "recall_by_type": {
+        "backtranslation": 0.523,
+        "light": 0.562,
+        "shuffle": 0.4,
+        "verbatim": 0.98
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.849,
+      "recall": 0.659,
+      "f1": 0.742,
+      "recall_by_type": {
+        "backtranslation": 0.545,
+        "light": 0.606,
+        "shuffle": 0.5,
+        "verbatim": 0.963
+      },
+      "quoted_flagged": "1/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k3_w6_cov0.2": {
+    "dev": {
+      "precision": 0.691,
+      "recall": 0.682,
+      "f1": 0.686,
+      "recall_by_type": {
+        "backtranslation": 0.659,
+        "light": 0.612,
+        "shuffle": 0.516,
+        "verbatim": 0.959
+      },
+      "quoted_flagged": "2/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.67,
+      "recall": 0.741,
+      "f1": 0.704,
+      "recall_by_type": {
+        "backtranslation": 0.72,
+        "light": 0.675,
+        "shuffle": 0.621,
+        "verbatim": 0.929
+      },
+      "quoted_flagged": "1/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k3_w6_cov0.3": {
+    "dev": {
+      "precision": 0.771,
+      "recall": 0.67,
+      "f1": 0.717,
+      "recall_by_type": {
+        "backtranslation": 0.636,
+        "light": 0.612,
+        "shuffle": 0.495,
+        "verbatim": 0.959
+      },
+      "quoted_flagged": "2/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.743,
+      "recall": 0.721,
+      "f1": 0.732,
+      "recall_by_type": {
+        "backtranslation": 0.681,
+        "light": 0.654,
+        "shuffle": 0.601,
+        "verbatim": 0.929
+      },
+      "quoted_flagged": "1/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k3_w6_cov0.5": {
+    "dev": {
+      "precision": 0.849,
+      "recall": 0.554,
+      "f1": 0.67,
+      "recall_by_type": {
+        "backtranslation": 0.477,
+        "light": 0.455,
+        "shuffle": 0.368,
+        "verbatim": 0.959
+      },
+      "quoted_flagged": "2/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.798,
+      "recall": 0.618,
+      "f1": 0.696,
+      "recall_by_type": {
+        "backtranslation": 0.498,
+        "light": 0.567,
+        "shuffle": 0.452,
+        "verbatim": 0.929
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k4_w3_cov0.2": {
+    "dev": {
+      "precision": 0.887,
+      "recall": 0.771,
+      "f1": 0.825,
+      "recall_by_type": {
+        "backtranslation": 0.773,
+        "light": 0.736,
+        "shuffle": 0.589,
+        "verbatim": 0.99
+      },
+      "quoted_flagged": "1/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.881,
+      "recall": 0.788,
+      "f1": 0.832,
+      "recall_by_type": {
+        "backtranslation": 0.743,
+        "light": 0.723,
+        "shuffle": 0.71,
+        "verbatim": 0.959
+      },
+      "quoted_flagged": "2/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k4_w3_cov0.3": {
+    "dev": {
+      "precision": 0.932,
+      "recall": 0.704,
+      "f1": 0.802,
+      "recall_by_type": {
+        "backtranslation": 0.689,
+        "light": 0.645,
+        "shuffle": 0.505,
+        "verbatim": 0.99
+      },
+      "quoted_flagged": "1/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.923,
+      "recall": 0.726,
+      "f1": 0.813,
+      "recall_by_type": {
+        "backtranslation": 0.65,
+        "light": 0.68,
+        "shuffle": 0.597,
+        "verbatim": 0.959
+      },
+      "quoted_flagged": "1/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k4_w3_cov0.5": {
+    "dev": {
+      "precision": 0.957,
+      "recall": 0.502,
+      "f1": 0.659,
+      "recall_by_type": {
+        "backtranslation": 0.417,
+        "light": 0.405,
+        "shuffle": 0.242,
+        "verbatim": 0.99
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.948,
+      "recall": 0.542,
+      "f1": 0.689,
+      "recall_by_type": {
+        "backtranslation": 0.428,
+        "light": 0.403,
+        "shuffle": 0.339,
+        "verbatim": 0.959
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k4_w4_cov0.2": {
+    "dev": {
+      "precision": 0.884,
+      "recall": 0.735,
+      "f1": 0.803,
+      "recall_by_type": {
+        "backtranslation": 0.75,
+        "light": 0.678,
+        "shuffle": 0.526,
+        "verbatim": 0.99
+      },
+      "quoted_flagged": "2/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.879,
+      "recall": 0.75,
+      "f1": 0.809,
+      "recall_by_type": {
+        "backtranslation": 0.7,
+        "light": 0.667,
+        "shuffle": 0.665,
+        "verbatim": 0.948
+      },
+      "quoted_flagged": "2/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k4_w4_cov0.3": {
+    "dev": {
+      "precision": 0.927,
+      "recall": 0.684,
+      "f1": 0.787,
+      "recall_by_type": {
+        "backtranslation": 0.644,
+        "light": 0.628,
+        "shuffle": 0.495,
+        "verbatim": 0.99
+      },
+      "quoted_flagged": "1/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.919,
+      "recall": 0.693,
+      "f1": 0.79,
+      "recall_by_type": {
+        "backtranslation": 0.611,
+        "light": 0.623,
+        "shuffle": 0.569,
+        "verbatim": 0.948
+      },
+      "quoted_flagged": "2/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k4_w4_cov0.5": {
+    "dev": {
+      "precision": 0.953,
+      "recall": 0.504,
+      "f1": 0.66,
+      "recall_by_type": {
+        "backtranslation": 0.409,
+        "light": 0.372,
+        "shuffle": 0.305,
+        "verbatim": 0.99
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.935,
+      "recall": 0.533,
+      "f1": 0.679,
+      "recall_by_type": {
+        "backtranslation": 0.397,
+        "light": 0.381,
+        "shuffle": 0.371,
+        "verbatim": 0.944
+      },
+      "quoted_flagged": "1/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k4_w6_cov0.2": {
+    "dev": {
+      "precision": 0.884,
+      "recall": 0.614,
+      "f1": 0.725,
+      "recall_by_type": {
+        "backtranslation": 0.591,
+        "light": 0.537,
+        "shuffle": 0.379,
+        "verbatim": 0.969
+      },
+      "quoted_flagged": "1/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.878,
+      "recall": 0.654,
+      "f1": 0.75,
+      "recall_by_type": {
+        "backtranslation": 0.584,
+        "light": 0.558,
+        "shuffle": 0.52,
+        "verbatim": 0.929
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k4_w6_cov0.3": {
+    "dev": {
+      "precision": 0.912,
+      "recall": 0.583,
+      "f1": 0.711,
+      "recall_by_type": {
+        "backtranslation": 0.53,
+        "light": 0.496,
+        "shuffle": 0.368,
+        "verbatim": 0.969
+      },
+      "quoted_flagged": "1/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.908,
+      "recall": 0.621,
+      "f1": 0.737,
+      "recall_by_type": {
+        "backtranslation": 0.525,
+        "light": 0.524,
+        "shuffle": 0.476,
+        "verbatim": 0.929
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k4_w6_cov0.5": {
+    "dev": {
+      "precision": 0.942,
+      "recall": 0.473,
+      "f1": 0.63,
+      "recall_by_type": {
+        "backtranslation": 0.371,
+        "light": 0.347,
+        "shuffle": 0.263,
+        "verbatim": 0.969
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.928,
+      "recall": 0.501,
+      "f1": 0.651,
+      "recall_by_type": {
+        "backtranslation": 0.346,
+        "light": 0.351,
+        "shuffle": 0.339,
+        "verbatim": 0.929
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k5_w3_cov0.2": {
+    "dev": {
+      "precision": 0.933,
+      "recall": 0.684,
+      "f1": 0.789,
+      "recall_by_type": {
+        "backtranslation": 0.674,
+        "light": 0.62,
+        "shuffle": 0.474,
+        "verbatim": 0.98
+      },
+      "quoted_flagged": "2/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.95,
+      "recall": 0.722,
+      "f1": 0.821,
+      "recall_by_type": {
+        "backtranslation": 0.65,
+        "light": 0.671,
+        "shuffle": 0.601,
+        "verbatim": 0.948
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k5_w3_cov0.3": {
+    "dev": {
+      "precision": 0.974,
+      "recall": 0.592,
+      "f1": 0.736,
+      "recall_by_type": {
+        "backtranslation": 0.568,
+        "light": 0.496,
+        "shuffle": 0.347,
+        "verbatim": 0.98
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.959,
+      "recall": 0.625,
+      "f1": 0.757,
+      "recall_by_type": {
+        "backtranslation": 0.549,
+        "light": 0.541,
+        "shuffle": 0.435,
+        "verbatim": 0.948
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k5_w3_cov0.5": {
+    "dev": {
+      "precision": 0.979,
+      "recall": 0.419,
+      "f1": 0.587,
+      "recall_by_type": {
+        "backtranslation": 0.326,
+        "light": 0.248,
+        "shuffle": 0.189,
+        "verbatim": 0.98
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.968,
+      "recall": 0.421,
+      "f1": 0.587,
+      "recall_by_type": {
+        "backtranslation": 0.288,
+        "light": 0.251,
+        "shuffle": 0.153,
+        "verbatim": 0.944
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k5_w4_cov0.2": {
+    "dev": {
+      "precision": 0.944,
+      "recall": 0.637,
+      "f1": 0.76,
+      "recall_by_type": {
+        "backtranslation": 0.621,
+        "light": 0.537,
+        "shuffle": 0.432,
+        "verbatim": 0.98
+      },
+      "quoted_flagged": "1/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.954,
+      "recall": 0.677,
+      "f1": 0.792,
+      "recall_by_type": {
+        "backtranslation": 0.599,
+        "light": 0.61,
+        "shuffle": 0.532,
+        "verbatim": 0.944
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k5_w4_cov0.3": {
+    "dev": {
+      "precision": 0.962,
+      "recall": 0.565,
+      "f1": 0.712,
+      "recall_by_type": {
+        "backtranslation": 0.508,
+        "light": 0.471,
+        "shuffle": 0.337,
+        "verbatim": 0.98
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.965,
+      "recall": 0.607,
+      "f1": 0.745,
+      "recall_by_type": {
+        "backtranslation": 0.525,
+        "light": 0.498,
+        "shuffle": 0.427,
+        "verbatim": 0.944
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k5_w4_cov0.5": {
+    "dev": {
+      "precision": 0.979,
+      "recall": 0.41,
+      "f1": 0.578,
+      "recall_by_type": {
+        "backtranslation": 0.341,
+        "light": 0.248,
+        "shuffle": 0.137,
+        "verbatim": 0.969
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.971,
+      "recall": 0.429,
+      "f1": 0.595,
+      "recall_by_type": {
+        "backtranslation": 0.292,
+        "light": 0.242,
+        "shuffle": 0.19,
+        "verbatim": 0.944
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k5_w6_cov0.2": {
+    "dev": {
+      "precision": 0.96,
+      "recall": 0.54,
+      "f1": 0.692,
+      "recall_by_type": {
+        "backtranslation": 0.523,
+        "light": 0.413,
+        "shuffle": 0.305,
+        "verbatim": 0.949
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.958,
+      "recall": 0.594,
+      "f1": 0.733,
+      "recall_by_type": {
+        "backtranslation": 0.518,
+        "light": 0.472,
+        "shuffle": 0.435,
+        "verbatim": 0.918
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k5_w6_cov0.3": {
+    "dev": {
+      "precision": 0.974,
+      "recall": 0.504,
+      "f1": 0.665,
+      "recall_by_type": {
+        "backtranslation": 0.447,
+        "light": 0.372,
+        "shuffle": 0.295,
+        "verbatim": 0.949
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.963,
+      "recall": 0.545,
+      "f1": 0.696,
+      "recall_by_type": {
+        "backtranslation": 0.455,
+        "light": 0.42,
+        "shuffle": 0.351,
+        "verbatim": 0.918
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k5_w6_cov0.5": {
+    "dev": {
+      "precision": 0.984,
+      "recall": 0.408,
+      "f1": 0.577,
+      "recall_by_type": {
+        "backtranslation": 0.341,
+        "light": 0.248,
+        "shuffle": 0.147,
+        "verbatim": 0.949
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.975,
+      "recall": 0.427,
+      "f1": 0.594,
+      "recall_by_type": {
+        "backtranslation": 0.296,
+        "light": 0.26,
+        "shuffle": 0.194,
+        "verbatim": 0.914
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k6_w3_cov0.2": {
+    "dev": {
+      "precision": 0.971,
+      "recall": 0.594,
+      "f1": 0.737,
+      "recall_by_type": {
+        "backtranslation": 0.53,
+        "light": 0.537,
+        "shuffle": 0.379,
+        "verbatim": 0.959
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.961,
+      "recall": 0.636,
+      "f1": 0.766,
+      "recall_by_type": {
+        "backtranslation": 0.56,
+        "light": 0.541,
+        "shuffle": 0.468,
+        "verbatim": 0.948
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k6_w3_cov0.3": {
+    "dev": {
+      "precision": 0.974,
+      "recall": 0.513,
+      "f1": 0.673,
+      "recall_by_type": {
+        "backtranslation": 0.439,
+        "light": 0.413,
+        "shuffle": 0.284,
+        "verbatim": 0.959
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.966,
+      "recall": 0.53,
+      "f1": 0.684,
+      "recall_by_type": {
+        "backtranslation": 0.428,
+        "light": 0.394,
+        "shuffle": 0.315,
+        "verbatim": 0.944
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k6_w3_cov0.5": {
+    "dev": {
+      "precision": 0.981,
+      "recall": 0.343,
+      "f1": 0.508,
+      "recall_by_type": {
+        "backtranslation": 0.197,
+        "light": 0.165,
+        "shuffle": 0.137,
+        "verbatim": 0.959
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.971,
+      "recall": 0.366,
+      "f1": 0.531,
+      "recall_by_type": {
+        "backtranslation": 0.21,
+        "light": 0.156,
+        "shuffle": 0.109,
+        "verbatim": 0.933
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k6_w4_cov0.2": {
+    "dev": {
+      "precision": 0.969,
+      "recall": 0.554,
+      "f1": 0.705,
+      "recall_by_type": {
+        "backtranslation": 0.508,
+        "light": 0.455,
+        "shuffle": 0.326,
+        "verbatim": 0.959
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.955,
+      "recall": 0.594,
+      "f1": 0.732,
+      "recall_by_type": {
+        "backtranslation": 0.529,
+        "light": 0.494,
+        "shuffle": 0.395,
+        "verbatim": 0.925
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k6_w4_cov0.3": {
+    "dev": {
+      "precision": 0.973,
+      "recall": 0.484,
+      "f1": 0.647,
+      "recall_by_type": {
+        "backtranslation": 0.402,
+        "light": 0.355,
+        "shuffle": 0.274,
+        "verbatim": 0.959
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.96,
+      "recall": 0.507,
+      "f1": 0.664,
+      "recall_by_type": {
+        "backtranslation": 0.397,
+        "light": 0.381,
+        "shuffle": 0.286,
+        "verbatim": 0.925
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k6_w4_cov0.5": {
+    "dev": {
+      "precision": 0.981,
+      "recall": 0.345,
+      "f1": 0.511,
+      "recall_by_type": {
+        "backtranslation": 0.212,
+        "light": 0.165,
+        "shuffle": 0.137,
+        "verbatim": 0.949
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.962,
+      "recall": 0.357,
+      "f1": 0.52,
+      "recall_by_type": {
+        "backtranslation": 0.206,
+        "light": 0.152,
+        "shuffle": 0.105,
+        "verbatim": 0.91
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k6_w6_cov0.2": {
+    "dev": {
+      "precision": 0.973,
+      "recall": 0.487,
+      "f1": 0.649,
+      "recall_by_type": {
+        "backtranslation": 0.409,
+        "light": 0.372,
+        "shuffle": 0.274,
+        "verbatim": 0.939
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.965,
+      "recall": 0.526,
+      "f1": 0.681,
+      "recall_by_type": {
+        "backtranslation": 0.444,
+        "light": 0.42,
+        "shuffle": 0.315,
+        "verbatim": 0.892
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k6_w6_cov0.3": {
+    "dev": {
+      "precision": 0.98,
+      "recall": 0.433,
+      "f1": 0.6,
+      "recall_by_type": {
+        "backtranslation": 0.333,
+        "light": 0.306,
+        "shuffle": 0.211,
+        "verbatim": 0.939
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.965,
+      "recall": 0.465,
+      "f1": 0.628,
+      "recall_by_type": {
+        "backtranslation": 0.339,
+        "light": 0.342,
+        "shuffle": 0.25,
+        "verbatim": 0.892
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "k6_w6_cov0.5": {
+    "dev": {
+      "precision": 0.981,
+      "recall": 0.341,
+      "f1": 0.506,
+      "recall_by_type": {
+        "backtranslation": 0.174,
+        "light": 0.182,
+        "shuffle": 0.158,
+        "verbatim": 0.939
+      },
+      "quoted_flagged": "0/26",
+      "bibliography_flagged": "0/108"
+    },
+    "test": {
+      "precision": 0.972,
+      "recall": 0.35,
+      "f1": 0.514,
+      "recall_by_type": {
+        "backtranslation": 0.195,
+        "light": 0.186,
+        "shuffle": 0.085,
+        "verbatim": 0.884
+      },
+      "quoted_flagged": "0/60",
+      "bibliography_flagged": "0/220"
+    }
+  },
+  "best_on_dev": "k4_w3_cov0.2"
+}
