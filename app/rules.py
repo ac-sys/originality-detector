@@ -21,8 +21,16 @@ DEFAULT_RULES = [
         "created": 1763380000.0,
     },
     {
+        "id": "rule-ai-uniform-burstiness",
+        "instruction": "Flag passages with uniform sentence length and low burstiness typical of AI prose",
+        "effect": "increase_ai",
+        "weight": 0.10,
+        "enabled": True,
+        "created": 1763380000.5,
+    },
+    {
         "id": "rule-fieldwork-human",
-        "instruction": "Reduce AI score when sentences contain authentic first-person fieldwork or empirical observations such as 'in our fieldwork', 'during my interview', 'we measured', 'participants reported that', 'in our laboratory'",
+        "instruction": "Reduce AI score when sentences contain specific fieldwork or empirical phrases such as 'in our fieldwork', 'during my interview', 'we measured', 'participants reported that', 'in our laboratory'",
         "effect": "decrease_ai",
         "weight": 0.20,
         "enabled": True,
@@ -30,7 +38,7 @@ DEFAULT_RULES = [
     },
     {
         "id": "rule-exempt-code-stats",
-        "instruction": "Do not flag technical formulas, statistical notation, or code snippets such as 'p < 0.05', 'p < 0.01', 'F(', 't(', 'SELECT ', 'def ', 'import ', 'https://', 'doi:'",
+        "instruction": "Do not flag technical formulas, statistical notation, or code snippets such as 'p < 0.05', 'p < 0.01', 'SELECT * FROM', 'def ', 'import numpy', 'import torch', 'https://', 'doi:'",
         "effect": "exempt",
         "weight": 1.0,
         "enabled": True,
@@ -40,8 +48,14 @@ DEFAULT_RULES = [
 
 _QUOTED = re.compile(r"['\"“”‘’]([^'\"“”‘’]{2,120})['\"“”‘’]")
 _CITE_RX = re.compile(r"\([A-Z][A-Za-z'\-]+(?:\s+et\s+al\.)?,?\s*(?:19|20)\d\d\)|\[\d{1,3}\]")
-_FIRST_PERSON_RX = re.compile(r"\b(i|we|my|our|myself|ourselves)\b", re.I)
-_CODE_MATH_RX = re.compile(r"(\bdef\s+\w+\s*\(|\bSELECT\s+.+\bFROM\b|\bimport\s+\w+|p\s*[<=>]\s*0?\.\d+|\b(?:F|t|r|z|chi2)\s*\(\d+|\b\d+\.\d+\s*±\s*\d+\.\d+|\\(?:sum|frac|int|alpha|beta)\b)")
+_FIRST_PERSON_RX = re.compile(r"\b(i|my|myself)\b", re.I)
+_CODE_MATH_RX = re.compile(r"(\bdef\s+\w+\s*\(|\bSELECT\s+.+\bFROM\b|\bimport\s+[a-zA-Z_]\w*|p\s*[<=>]\s*0?\.\d+|\b(?:F|t|r|z|chi2)\s*\(\d+|\b\d+\.\d+\s*±\s*\d+\.\d+|\\(?:sum|frac|int|alpha|beta)\b)")
+
+
+def _phrase_in_text(phrase: str, text_low: str) -> bool:
+    """Match phrase on whole-word boundaries so 'import' never matches inside 'important'."""
+    pattern = r"(?<![a-z0-9_])" + re.escape(phrase) + r"(?![a-z0-9_])"
+    return bool(re.search(pattern, text_low))
 
 
 def compile_english_rule(instruction: str, effect: str = None, weight: float = None):
@@ -77,7 +91,7 @@ def compile_english_rule(instruction: str, effect: str = None, weight: float = N
         structural.append("no_citations")
     if any(k in low for k in ("with citation", "contains citation", "has citation", "properly cited")):
         structural.append("has_citations")
-    if any(k in low for k in ("first-person", "first person", "personal pronoun", "personal reflection")):
+    if not phrases and any(k in low for k in ("first-person", "first person", "personal pronoun", "personal reflection")):
         structural.append("first_person")
     if any(k in low for k in ("code", "formula", "equation", "statistical notation", "math")):
         structural.append("code_or_math")
@@ -199,11 +213,12 @@ class RuleEngine:
         sent_lows = [t.lower() for t in sent_texts]
         word_counts = [len(t.split()) for t in sent_texts]
 
-        # Precompute local sentence length std (burstiness) in 5-sentence window
+        # Precompute local sentence length uniformity (low burstiness) in 5-sentence window
         uniform_flags = [False] * n
         for i in range(n):
             win = word_counts[max(0, i - 2):min(n, i + 3)]
-            if len(win) >= 4 and np.std(win) < 2.2 and np.mean(win) >= 12:
+            mean_w = float(np.mean(win)) if win else 0.0
+            if len(win) >= 4 and mean_w >= 12 and (float(np.std(win)) < 2.2 or float(np.std(win)) / mean_w < 0.15):
                 uniform_flags[i] = True
 
         # Optional semantic embeddings for semantic rules
@@ -234,9 +249,9 @@ class RuleEngine:
                 if c.get("max_words") and wc > c["max_words"]:
                     continue
 
-                # 1. Lexical phrase check
+                # 1. Lexical phrase check (whole-word boundary aware)
                 if c.get("phrases"):
-                    hits = [p for p in c["phrases"] if p in low]
+                    hits = [p for p in c["phrases"] if _phrase_in_text(p, low)]
                     if hits:
                         matched_reasons.append(f"matched phrase '{hits[0]}'")
 
@@ -329,3 +344,4 @@ class RuleEngine:
 
         ai["rules_applied"] = list(rule_summary.values())
         return per_sent_hits
+
