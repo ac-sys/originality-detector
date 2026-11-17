@@ -107,3 +107,33 @@ def test_library_delete_and_paste_submit(tmp_path):
     rlist = cl.get("/api/reports").json()
     assert any(r["id"] == j for r in rlist)
     assert cl.patch("/api/appeals/0", json={"status": "resolved"}).json()["appeal"]["status"] == "resolved"
+
+def test_english_ai_rules_and_batch_collusion(tmp_path):
+    from app.rules import RuleEngine, compile_english_rule
+    from app.websources import extract_reference_entries, PROVIDERS
+    assert {"wikipedia", "openalex", "crossref", "semanticscholar", "arxiv", "europepmc"} <= set(PROVIDERS.keys())
+    c1 = compile_english_rule("Flag sentences containing 'delve into' or 'rich tapestry'")
+    assert c1["effect"] == "increase_ai" and "delve into" in c1["phrases"]
+    c2 = compile_english_rule("Do not flag sentences with code or statistical formulas under 40 words")
+    assert c2["effect"] == "exempt" and "code_or_math" in c2["structural"] and c2["max_words"] == 40
+    eng = RuleEngine(tmp_path / "rules.json")
+    added = eng.add_rule("Flag sentences containing 'quantum synergy'")
+    sample = "This essay explores quantum synergy in modern business. In our fieldwork, we measured p < 0.05 across samples."
+    sents = split_sentences(sample)
+    fake_ai = {"probability": 0.4, "share_flagged": 0.0, "sentence_probs": [0.4, 0.4], "sentence_flagged": [False, False], "verdict": "no_strong_signal"}
+    hits = eng.evaluate(sample, sents, fake_ai)
+    assert any(h["id"] == added["id"] for h in hits[0])
+    assert fake_ai["sentence_probs"][0] > 0.4
+    assert fake_ai["sentence_probs"][1] <= 0.05  # exempted by p < 0.05 statistical rule
+    refs = extract_reference_entries("Body text here.\nReferences\nSmith, J. (2021). Deep learning in education. Journal of AI, 12(3), 45-60.")
+    assert len(refs) == 1 and "Smith" in refs[0]
+    from fastapi.testclient import TestClient
+    from app.main import app
+    cl = TestClient(app)
+    r_create = cl.post("/api/rules", json={"instruction": "Flag sentences containing 'synthetic buzzword'"}).json()
+    assert r_create["id"].startswith("rule-")
+    r_test = cl.post("/api/rules/test", json={"text": "This contains synthetic buzzword in a sentence."}).json()
+    assert len(r_test["sentences"][0]["rule_hits"]) >= 1
+    assert cl.delete(f"/api/rules/{r_create['id']}").json()["ok"] is True
+    b_res = cl.post("/api/batch", files=[("files", ("s1.txt", A.encode())), ("files", ("s2.txt", A.encode()))], data={"add_to_library": "false"}).json()
+    assert len(b_res["collusion_pairs"]) == 1 and b_res["collusion_pairs"][0]["fingerprint_overlap_percent"] == 100.0

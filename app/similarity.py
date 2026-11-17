@@ -365,9 +365,9 @@ class Corpus:
                 res[i]["paraphrase"] = {"doc": d, "title": title(d)[0], "score": round(sc, 3), "matched_text": t[:400], "stage": "aligned"}
         return res
 
-def web_check(sentences, text=None, providers=None):
+def web_check(sentences, text=None, providers=None, embeddings=None):
     from .websources import check_web
-    return check_web(sentences, providers=providers)
+    return check_web(sentences, providers=providers, embeddings=embeddings)
 
 _ENT = re.compile(r"\b(?:[A-Z][\w'\-]*[a-z0-9][\w'\-]*|[A-Z]{2,}|\d[\d.,]*\d|\d)\b")
 _STOPCAP = {"The", "A", "An", "In", "On", "At", "This", "That", "These", "Those", "It", "He", "She", "They", "We", "His", "Her",

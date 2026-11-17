@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Originality Detector v3.2 — Similarity & AI-Writing Evidence</title>
+<title>Originality Detector v3.2 — Similarity, AI Rules & Citation Verification</title>
 <style>
 :root {
   --bg: #f8fafc;
@@ -20,6 +20,8 @@
   --ai-bg: #ede9fe;
   --ai-border: #8b5cf6;
   --excl-bg: #f1f5f9;
+  --rule-bg: #dbeafe;
+  --rule-border: #2563eb;
   --success: #10b981;
 }
 * { box-sizing: border-box; }
@@ -62,6 +64,7 @@ header h1 {
 nav {
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;
 }
 nav button {
   background: transparent;
@@ -78,7 +81,7 @@ nav button.active {
   border-color: #bfdbfe;
 }
 main {
-  max-width: 1240px;
+  max-width: 1260px;
   margin: 20px auto;
   padding: 0 20px 40px;
 }
@@ -106,7 +109,7 @@ main {
   margin: 4px 0;
 }
 small, .muted { color: var(--muted); font-size: 13px; }
-input[type="text"], input[type="file"], textarea, select {
+input[type="text"], input[type="number"], input[type="file"], textarea, select {
   width: 100%;
   padding: 9px 12px;
   border: 1px solid var(--border);
@@ -176,7 +179,7 @@ button.btn-danger {
 }
 .split-view {
   display: grid;
-  grid-template-columns: 1fr 360px;
+  grid-template-columns: 1fr 370px;
   gap: 16px;
   align-items: start;
 }
@@ -200,11 +203,11 @@ button.btn-danger {
 .pa { background: var(--para-bg); border-bottom: 2px solid var(--para-border); }
 .ai { background: var(--ai-bg); border-bottom: 2px solid var(--ai-border); }
 .excl { background: var(--excl-bg); color: var(--muted); }
-.filter-bar {
+.filter-bar, .provider-pills {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin: 10px 0 14px;
+  margin: 10px 0;
 }
 .filter-bar button {
   border: 1px solid var(--border);
@@ -218,6 +221,17 @@ button.btn-danger {
   background: var(--text);
   color: #fff;
   border-color: var(--text);
+}
+.provider-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 12px;
+  background: #f8fafc;
+  cursor: pointer;
 }
 table {
   width: 100%;
@@ -240,6 +254,21 @@ th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: upp
   margin-top: 8px;
   white-space: pre-wrap;
 }
+.spark-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 44px;
+  padding: 4px 0;
+  overflow-x: auto;
+}
+.spark-col {
+  flex: 1;
+  min-width: 4px;
+  max-width: 12px;
+  border-radius: 2px 2px 0 0;
+  cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -251,6 +280,8 @@ th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: upp
   </h1>
   <nav>
     <button class="active" onclick="switchTab('check', this)">Check Document</button>
+    <button onclick="switchTab('rules', this)">English AI Rules (<span id="nav-rules-count">3</span>)</button>
+    <button onclick="switchTab('batch', this)">Batch & Collusion</button>
     <button onclick="switchTab('history', this)">Past Reports</button>
     <button onclick="switchTab('library', this)">Reference Library</button>
     <button onclick="switchTab('admin', this)">Appeals & Models</button>
@@ -272,15 +303,31 @@ th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: upp
         <div id="text-input-wrap" class="hidden" style="margin-bottom:12px">
           <textarea name="text" id="text-input" rows="6" placeholder="Paste student essay or article text here (minimum ~150 words recommended for AI detection)..."></textarea>
         </div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+
+        <div style="margin-bottom:12px">
+          <small style="font-weight:600;display:block;margin-bottom:4px">Online Academic & Web Similarity Sources (Opt-in):</small>
+          <div class="provider-pills">
+            <label class="provider-pill"><input type="checkbox" name="ws" value="wikipedia"> Wikipedia</label>
+            <label class="provider-pill"><input type="checkbox" name="ws" value="openalex"> OpenAlex (250M+ Works)</label>
+            <label class="provider-pill"><input type="checkbox" name="ws" value="crossref"> CrossRef (150M+ DOIs)</label>
+            <label class="provider-pill"><input type="checkbox" name="ws" value="semanticscholar"> Semantic Scholar</label>
+            <label class="provider-pill"><input type="checkbox" name="ws" value="arxiv"> arXiv Preprints</label>
+            <label class="provider-pill"><input type="checkbox" name="ws" value="europepmc"> Europe PMC</label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
           <div style="flex:1;min-width:220px">
             <input type="text" name="title" placeholder="Document Title (optional)">
           </div>
-          <label style="font-size:14px;display:flex;align-items:center;gap:6px">
+          <label style="font-size:13px;display:flex;align-items:center;gap:5px">
             <input type="checkbox" name="add" checked> Add to library
           </label>
-          <label style="font-size:14px;display:flex;align-items:center;gap:6px" title="Query Wikipedia and OpenAlex for external matches">
-            <input type="checkbox" name="web_check"> Live Web Check (Wikipedia + OpenAlex)
+          <label style="font-size:13px;display:flex;align-items:center;gap:5px" title="Verify bibliography references against CrossRef and OpenAlex to detect fabricated AI citations">
+            <input type="checkbox" name="verify_refs"> Verify Citations (CrossRef/OpenAlex)
+          </label>
+          <label style="font-size:13px;display:flex;align-items:center;gap:5px" title="Query configured external AI/LLM connectors (Sapling / GPTZero / Online LLM)">
+            <input type="checkbox" name="online_ai"> Online AI Second-Opinion
           </label>
           <button type="submit" class="btn" id="submit-btn">Run Originality Check</button>
         </div>
@@ -292,7 +339,82 @@ th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: upp
     <div id="out"></div>
   </section>
 
-  <!-- TAB 2: PAST REPORTS -->
+  <!-- TAB 2: PLAIN-ENGLISH AI RULES -->
+  <section id="tab-rules" class="hidden">
+    <div class="card">
+      <h3 style="margin-top:0">Add a Custom AI Rule in Plain English</h3>
+      <p class="muted" style="margin-top:0">
+        Write instructions in natural English. The rule compiler automatically extracts quoted phrases, structural patterns (first-person voice, uncited claims, uniform sentence length, code/math notation, word counts), or semantic concepts (`e5-small-v2` embeddings) and applies them on top of the statistical AI ensemble.
+      </p>
+      <form id="rule-form">
+        <div style="margin-bottom:10px">
+          <textarea name="instruction" rows="2" required placeholder="e.g. Flag sentences containing typical AI phrases such as 'delve into', 'rich tapestry', 'testament to', 'underscores the importance'"></textarea>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div style="width:220px">
+            <select name="effect">
+              <option value="">Auto-detect effect from English</option>
+              <option value="increase_ai">Increase AI Score (Flag AI)</option>
+              <option value="decrease_ai">Decrease AI Score (Human Signal)</option>
+              <option value="exempt">Exempt / Never Flag as AI</option>
+            </select>
+          </div>
+          <div style="width:160px">
+            <input type="number" name="weight" step="0.05" min="0.05" max="1.0" placeholder="Weight (default 0.25)">
+          </div>
+          <button type="submit" class="btn">Add English Rule</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="margin:0">Active AI Rule Base</h3>
+        <button class="btn-outline" onclick="loadRules()">Refresh</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Plain-English Rule Instruction</th>
+            <th>Compiled Criteria</th>
+            <th>Effect & Weight</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="rules-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0">Live Rule Sandbox — Test Your English Rules on Sample Text</h3>
+      <textarea id="rule-test-input" rows="3" placeholder="Paste a few sentences here to see which English rules match and how they adjust the AI probability...">Moreover, it is important to note that artificial intelligence delves into a rich tapestry of modern education. In our fieldwork, we measured the outcomes with p < 0.05 across all cohorts.</textarea>
+      <div style="margin-top:10px">
+        <button class="btn-outline" onclick="runRuleTest()">Test Rules on Sample Text</button>
+      </div>
+      <div id="rule-test-out" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <!-- TAB 3: BATCH & COHORT COLLUSION -->
+  <section id="tab-batch" class="hidden">
+    <div class="card">
+      <h3 style="margin-top:0">Batch Upload & Cross-Student Collusion Check</h3>
+      <p class="muted" style="margin-top:0">Select multiple student files (.pdf, .docx, .txt, .md) to compare them against each other for student-to-student copying and queue full originality reports for each file.</p>
+      <form id="batch-form" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <div style="flex:1;min-width:260px">
+          <input type="file" name="files" multiple accept=".pdf,.docx,.txt,.md" required>
+        </div>
+        <label style="font-size:13px;display:flex;align-items:center;gap:5px">
+          <input type="checkbox" name="add_to_library" checked> Add all to library
+        </label>
+        <button type="submit" class="btn">Run Batch & Collusion Check</button>
+      </form>
+      <div id="batch-out" style="margin-top:16px"></div>
+    </div>
+  </section>
+
+  <!-- TAB 4: PAST REPORTS -->
   <section id="tab-history" class="hidden">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
@@ -317,7 +439,7 @@ th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: upp
     </div>
   </section>
 
-  <!-- TAB 3: REFERENCE LIBRARY -->
+  <!-- TAB 5: REFERENCE LIBRARY -->
   <section id="tab-library" class="hidden">
     <div class="card">
       <h3 style="margin-top:0">Add Reference Document to Corpus</h3>
@@ -342,7 +464,7 @@ th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: upp
     </div>
   </section>
 
-  <!-- TAB 4: APPEALS & MODELS -->
+  <!-- TAB 6: APPEALS & MODELS -->
   <section id="tab-admin" class="hidden">
     <div class="row" style="margin-bottom:16px">
       <div class="card">
@@ -371,6 +493,7 @@ async function refreshHealth() {
     const h = await (await fetch('/api/health')).json();
     const m = h.models || {};
     $('#models-pill').textContent = `${m.classifier || ''} + ${m.classifier2 || 'single'} | sim: ${h.similarity || ''} | ${h.library_docs} docs`;
+    if (h.active_rules != null) $('#nav-rules-count').textContent = h.active_rules;
   } catch (e) {}
 }
 refreshHealth();
@@ -380,6 +503,7 @@ function switchTab(tab, btn) {
   $(`#tab-${tab}`).classList.remove('hidden');
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+  if (tab === 'rules') loadRules();
   if (tab === 'history') loadHistory();
   if (tab === 'library') loadLibrary();
   if (tab === 'admin') loadAdmin();
@@ -406,7 +530,11 @@ $('#f').onsubmit = async e => {
   }
   fd.append('title', f.title.value);
   fd.append('add_to_library', f.add.checked);
-  if (f.web_check.checked) fd.append('web_sources', 'wikipedia,openalex');
+  const selectedWs = Array.from(f.querySelectorAll('input[name="ws"]:checked')).map(cb => cb.value);
+  if (selectedWs.length) fd.append('web_sources', selectedWs.join(','));
+  fd.append('verify_refs', f.verify_refs.checked);
+  fd.append('online_ai', f.online_ai.checked);
+
   $('#submit-btn').disabled = true;
   $('#st').textContent = 'Submitting...';
   $('#bar div').style.width = '5%';
@@ -462,13 +590,15 @@ function renderReport() {
   if (!r) return;
   const a = r.ai || {}, s = r.similarity || {};
   const feats = a.features ? Object.entries(a.features).map(([k, v]) => `${k}: ${v}`).join(' · ') : '';
+  const rulesApplied = a.rules_applied || [];
+  const cites = s.citations || {};
   let h = `
   <div class="row" style="margin-bottom:16px">
     <div class="card">
       <small>Overall Similarity</small>
       <div class="big">${s.percent}%</div>
       <small>Exact: <b>${s.exact_percent}%</b> · Paraphrase: <b>${s.paraphrase_percent}%</b> · Excluded (Quotes/Bib): <b>${s.excluded_percent || 0}%</b></small>
-      ${s.web && s.web.enabled ? `<br><small>Live Web Matches: <b>${(s.web.matches || []).length}</b> (${(s.web.providers || []).join(', ')})</small>` : ''}
+      ${s.web && s.web.enabled ? `<br><small>Online Matches: <b>${(s.web.matches || []).length}</b> (${(s.web.providers || []).join(', ')})</small>` : ''}
     </div>
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center">
@@ -476,8 +606,9 @@ function renderReport() {
         ${verdictBadge(a.verdict)}
       </div>
       <div class="big">${a.probability == null ? 'n/a' : Math.round(a.probability * 100) + '%'}</div>
-      <small>± ${Math.round((a.uncertainty || 0) * 100)} pts · <b>${Math.round((a.share_flagged || 0) * 100)}%</b> of text in flagged AI windows ${a.low_confidence ? '· <b>Low confidence (&lt;150 words)</b>' : ''}</small>
-      ${feats ? `<br><small class="muted">Model logits (${ esc(feats) })</small>` : ''}
+      <small>± ${Math.round((a.uncertainty || 0) * 100)} pts · <b>${Math.round((a.share_flagged || 0) * 100)}%</b> flagged AI windows · Burstiness CV: <b>${a.burstiness_cv ?? 'n/a'}</b></small>
+      ${a.base_probability != null && a.base_probability !== a.probability ? `<br><small class="muted">Base ML model: ${Math.round(a.base_probability * 100)}% → Adjusted by English rules: <b>${Math.round(a.probability * 100)}%</b></small>` : ''}
+      ${feats ? `<br><small class="muted">Model logits (${esc(feats)})</small>` : ''}
     </div>
   </div>
   <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
@@ -488,6 +619,34 @@ function renderReport() {
     </div>
   </div>`;
 
+  if (rulesApplied.length) {
+    h += `<div class="card"><b>Custom English AI Rules Triggered (${rulesApplied.length})</b><ul style="margin:8px 0 0;padding-left:20px">`;
+    rulesApplied.forEach(ru => {
+      h += `<li><span class="badge">${esc(ru.effect)}</span> ${esc(ru.instruction)} — matched <b>${ru.sentences_matched}</b> sentence(s)</li>`;
+    });
+    h += `</ul></div>`;
+  }
+
+  if (cites.enabled) {
+    h += `<div class="card"><b>Citation & Reference Verification (CrossRef + OpenAlex)</b>
+      <div style="margin-top:6px"><small>Extracted <b>${cites.extracted_count || 0}</b> bibliography references: <b>${cites.verified_count || 0} verified</b>, <b>${cites.unverified_count || 0} unverified</b></small></div>`;
+    if ((cites.unverified || []).length) {
+      h += `<div style="margin-top:8px"><b style="color:#b91c1c;font-size:13px">Unverified / Potential Hallucinated References:</b><ul style="margin:4px 0 0;padding-left:20px;font-size:13px">`;
+      cites.unverified.forEach(u => {
+        h += `<li>${esc(u.reference)} <span class="badge strict">Unverified</span></li>`;
+      });
+      h += `</ul></div>`;
+    }
+    if ((cites.verified || []).length) {
+      h += `<div style="margin-top:8px"><b style="color:#166534;font-size:13px">Verified DOIs / Publications:</b><ul style="margin:4px 0 0;padding-left:20px;font-size:13px">`;
+      cites.verified.forEach(v => {
+        h += `<li>${esc(v.matched_title)} (${esc(v.source)}) ${v.doi ? `<a href="${esc(v.doi)}" target="_blank" rel="noopener">Link</a>` : ''}</li>`;
+      });
+      h += `</ul></div>`;
+    }
+    h += `</div>`;
+  }
+
   if ((s.sources && s.sources.length) || (s.web && s.web.matches && s.web.matches.length)) {
     h += `<div class="card"><b>Matched Sources</b><ul style="margin:8px 0 0;padding-left:20px">`;
     (s.sources || []).forEach(x => {
@@ -495,17 +654,36 @@ function renderReport() {
     });
     if (s.web && s.web.matches) {
       s.web.matches.forEach(w => {
-        h += `<li><b>[Web: ${esc(w.provider)}]</b> <a href="${esc(w.url)}" target="_blank" rel="noopener">${esc(w.title)}</a> — score ${w.score} (${w.type})</li>`;
+        h += `<li><b>[Online: ${esc(w.provider)}]</b> <a href="${esc(w.url)}" target="_blank" rel="noopener">${esc(w.title)}</a> — score ${w.score} (${w.type})</li>`;
       });
     }
     h += `</ul></div>`;
   }
+
+  // Stylometric & AI Signal Sparkline across sentences
+  const step = Math.max(1, Math.ceil(r.sentences.length / 120));
+  const sampled = r.sentences.filter((_, i) => i % step === 0);
+  h += `<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <b>Sentence AI Signal & Stylometric Profile</b>
+      <small>Each bar = sentence AI probability (purple = flagged, red = exact match, amber = paraphrase)</small>
+    </div>
+    <div class="spark-bar">
+      ${sampled.map((x, idx) => {
+        const realIdx = idx * step;
+        const pct = Math.max(10, Math.round((x.ai_prob || 0) * 100));
+        const col = x.exact ? '#ef4444' : x.paraphrase ? '#f59e0b' : x.ai_flag ? '#8b5cf6' : '#cbd5e1';
+        return `<div class="spark-col" style="height:${pct}%;background:${col}" title="Sentence #${realIdx+1}: AI ${Math.round((x.ai_prob||0)*100)}%" onclick="inspectSentence(${realIdx})"></div>`;
+      }).join('')}
+    </div>
+  </div>`;
 
   const counts = {
     all: r.sentences.length,
     exact: r.sentences.filter(x => x.exact).length,
     para: r.sentences.filter(x => !x.exact && x.paraphrase).length,
     ai: r.sentences.filter(x => x.ai_flag).length,
+    rules: r.sentences.filter(x => x.rule_hits && x.rule_hits.length).length,
     excl: r.sentences.filter(x => x.excluded).length
   };
 
@@ -514,13 +692,14 @@ function renderReport() {
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
         <b>Document Evidence (${r.words} words, ${r.sentences.length} sentences)</b>
-        <small>Click any sentence to inspect source & AI metrics</small>
+        <small>Click any sentence to inspect source, AI score & triggered English rules</small>
       </div>
       <div class="filter-bar">
         <button class="${currentFilter==='all'?'active':''}" onclick="setFilter('all')">All (${counts.all})</button>
         <button class="${currentFilter==='exact'?'active':''}" onclick="setFilter('exact')">Exact Match (${counts.exact})</button>
         <button class="${currentFilter==='para'?'active':''}" onclick="setFilter('para')">Paraphrase (${counts.para})</button>
         <button class="${currentFilter==='ai'?'active':''}" onclick="setFilter('ai')">AI-Flagged (${counts.ai})</button>
+        <button class="${currentFilter==='rules'?'active':''}" onclick="setFilter('rules')">Rule Hits (${counts.rules})</button>
         <button class="${currentFilter==='excl'?'active':''}" onclick="setFilter('excl')">Excluded (${counts.excl})</button>
       </div>
       <p style="line-height:1.85;margin:0">`;
@@ -529,6 +708,7 @@ function renderReport() {
     if (currentFilter === 'exact' && !x.exact) return;
     if (currentFilter === 'para' && (x.exact || !x.paraphrase)) return;
     if (currentFilter === 'ai' && !x.ai_flag) return;
+    if (currentFilter === 'rules' && !(x.rule_hits && x.rule_hits.length)) return;
     if (currentFilter === 'excl' && !x.excluded) return;
     let c = '';
     if (x.exact) c = 'ex';
@@ -541,7 +721,7 @@ function renderReport() {
   h += `</p></div>
     <div class="card inspector" id="inspector-card">
       <b>Sentence Inspector</b>
-      <p class="muted" style="margin-top:6px">Click any sentence in the document on the left to inspect its AI probability, matched source document, and side-by-side source passage.</p>
+      <p class="muted" style="margin-top:6px">Click any sentence in the document on the left to inspect its AI probability, triggered English rules, and side-by-side matched source passage.</p>
     </div>
   </div>`;
   $('#out').innerHTML = h;
@@ -557,6 +737,16 @@ function inspectSentence(idx) {
     <div class="quote-box">${esc(s.text)}</div>
     <div style="margin-top:12px;font-size:13px">
       <div><b>Window AI Probability:</b> ${Math.round((s.ai_prob || 0) * 100)}% ${s.ai_flag ? '<span class="badge possible">Flagged AI Window</span>' : ''}</div>`;
+  if (s.rule_hits && s.rule_hits.length) {
+    html += `<hr style="border:none;border-top:1px solid var(--border);margin:10px 0">
+      <div><b>Custom English Rules Triggered:</b></div>`;
+    s.rule_hits.forEach(rh => {
+      html += `<div class="quote-box" style="border-left-color:var(--primary)">
+        <b>[${esc(rh.effect)}]</b> ${esc(rh.instruction)}<br>
+        <small class="muted">Reason: ${esc(rh.reason)} · Probability delta: ${rh.delta >= 0 ? '+' : ''}${Math.round(rh.delta * 100)}%</small>
+      </div>`;
+    });
+  }
   if (s.excluded) {
     html += `<div style="margin-top:8px"><b>Excluded:</b> <span class="badge">${esc(s.excluded)}</span> (ignored in similarity score)</div>`;
   }
@@ -573,6 +763,102 @@ function inspectSentence(idx) {
   html += `</div>`;
   $('#inspector-card').innerHTML = html;
 }
+
+// ---------- Rules Management ----------
+async function loadRules() {
+  const list = await (await fetch('/api/rules')).json();
+  $('#nav-rules-count').textContent = list.filter(r => r.enabled).length;
+  $('#rules-tbody').innerHTML = list.map(r => {
+    const c = r.compiled || {};
+    const parts = [];
+    if (c.phrases && c.phrases.length) parts.push(`Phrases: ${c.phrases.slice(0, 5).map(p => `'${p}'`).join(', ')}${c.phrases.length > 5 ? '…' : ''}`);
+    if (c.structural && c.structural.length) parts.push(`Structural: ${c.structural.join(', ')}`);
+    if (c.min_words) parts.push(`>= ${c.min_words} words`);
+    if (c.max_words) parts.push(`<= ${c.max_words} words`);
+    if (c.semantic_query) parts.push(`Semantic: "${c.semantic_query}"`);
+    return `
+    <tr>
+      <td><input type="checkbox" ${r.enabled ? 'checked' : ''} onchange="toggleRule('${esc(r.id)}', this.checked)"></td>
+      <td><b>${esc(r.instruction)}</b></td>
+      <td><small>${esc(parts.join(' | ') || 'General rule')}</small></td>
+      <td><span class="badge">${esc(r.effect)}</span> <small>(w=${r.weight})</small></td>
+      <td><button class="btn-danger" onclick="deleteRule('${esc(r.id)}')">Delete</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" class="muted">No rules configured.</td></tr>';
+}
+
+$('#rule-form').onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target;
+  const payload = {
+    instruction: f.instruction.value.trim(),
+    effect: f.effect.value || null,
+    weight: f.weight.value ? parseFloat(f.weight.value) : null,
+    enabled: true
+  };
+  const res = await fetch('/api/rules', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  });
+  if (res.ok) {
+    f.reset();
+    loadRules();
+    refreshHealth();
+  }
+};
+
+async function toggleRule(id, enabled) {
+  await fetch('/api/rules/' + id, {
+    method: 'PATCH',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({enabled})
+  });
+  loadRules();
+  refreshHealth();
+}
+
+async function deleteRule(id) {
+  if (!confirm('Delete this English rule?')) return;
+  await fetch('/api/rules/' + id, {method: 'DELETE'});
+  loadRules();
+  refreshHealth();
+}
+
+async function runRuleTest() {
+  const text = $('#rule-test-input').value.trim();
+  if (!text) return;
+  const res = await (await fetch('/api/rules/test', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({text})
+  })).json();
+  $('#rule-test-out').innerHTML = (res.sentences || []).map((s, i) => `
+    <div style="padding:8px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;background:${s.rule_hits.length ? '#eff6ff' : '#fff'}">
+      <div><b>Sentence #${i+1}:</b> ${esc(s.text)} — <b>Adjusted AI Prob: ${Math.round(s.ai_prob * 100)}%</b> (base 50%)</div>
+      ${s.rule_hits.map(h => `<small style="color:var(--primary);display:block">↳ Triggered <b>[${esc(h.effect)}]</b> (${esc(h.reason)}): delta ${h.delta >= 0 ? '+' : ''}${Math.round(h.delta * 100)}%</small>`).join('')}
+    </div>
+  `).join('');
+}
+
+// ---------- Batch & Collusion ----------
+$('#batch-form').onsubmit = async e => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  $('#batch-out').innerHTML = '<p class="muted">Processing cohort collusion matrix...</p>';
+  const res = await (await fetch('/api/batch', {method: 'POST', body: fd})).json();
+  let h = `<h4>Cross-Student Collusion Matrix</h4>
+    <table><thead><tr><th>Document A</th><th>Document B</th><th>Lexical Fingerprint Overlap</th></tr></thead><tbody>`;
+  (res.collusion_pairs || []).forEach(p => {
+    h += `<tr><td>${esc(p.doc_a)}</td><td>${esc(p.doc_b)}</td><td><b>${p.fingerprint_overlap_percent}%</b></td></tr>`;
+  });
+  h += `</tbody></table><h4 style="margin-top:16px">Queued Individual Reports</h4><ul>`;
+  (res.jobs || []).forEach(j => {
+    h += `<li>${esc(j.filename)} — Job <code>${esc(j.job_id)}</code> <button class="btn-outline" onclick="openReportFromHistory('${esc(j.job_id)}')">Open Report</button></li>`;
+  });
+  h += `</ul>`;
+  $('#batch-out').innerHTML = h;
+};
 
 async function appeal(id) {
   const by = prompt('Your name / student ID (optional):') || '';

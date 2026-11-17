@@ -5,19 +5,22 @@ from concurrent.futures import ThreadPoolExecutor
 from .config import REPORTS
 from .extract import extract_text, normalise, split_sentences
 from .similarity import Embedder, web_check
+from .rules import RuleEngine
+from .websources import verify_citations, check_online_ai
 BLOCK = 120  # sentences per block
 class JobManager:
-    def __init__(self, corpus, ensemble, workers=2):
+    def __init__(self, corpus, ensemble, workers=2, rules=None):
         self.corpus, self.ens = corpus, ensemble
+        self.rules = rules or RuleEngine()
         self.pool = ThreadPoolExecutor(workers); self.jobs = {}; self.lock = threading.Lock()
-    def submit(self, filename, data, title=None, add_to_library=True, web_sources=None):
+    def submit(self, filename, data, title=None, add_to_library=True, web_sources=None, verify_refs=False, online_ai=False):
         jid = uuid.uuid4().hex[:12]
         self.jobs[jid] = {"id": jid, "status": "queued", "progress": 0.0, "filename": filename, "created": time.time()}
-        self.pool.submit(self._run, jid, filename, data, title or filename, add_to_library, web_sources)
+        self.pool.submit(self._run, jid, filename, data, title or filename, add_to_library, web_sources, verify_refs, online_ai)
         return jid
     def _set(self, jid, **kw):
         with self.lock: self.jobs[jid].update(kw)
-    def _run(self, jid, filename, data, title, add, web_sources=None):
+    def _run(self, jid, filename, data, title, add, web_sources=None, verify_refs=False, online_ai=False):
         try:
             self._set(jid, status="extracting")
             text = normalise(extract_text(filename, data))
@@ -37,8 +40,13 @@ class JobManager:
                 self._set(jid, progress=round(0.9*(b+1)/n_blocks, 3))
             E = np.vstack(embs)
             ai = self.ens.summarise(lp, cl, cal, sents)
+            rule_hits = self.rules.evaluate(text, sents, ai, embeddings=E)
+            if online_ai:
+                ai["online_verification"] = check_online_ai(text, rules=self.rules.list_rules(), enabled=True)
             sim = self.corpus.check(text, sents, embeddings=E)
             words = [len(t.split()) for _, _, t in sents]; tot = sum(words) or 1
+            burstiness = round(float(np.std(words)) / max(1.0, float(np.mean(words))), 3) if words else 0.0
+            ai["burstiness_cv"] = burstiness
             for r in sim:
                 if r.get("excluded"): r["exact"] = r["paraphrase"] = None
             exact_w = sum(w for w, r in zip(words, sim) if r["exact"])
@@ -52,13 +60,17 @@ class JobManager:
                     src["words"] += w
             srcs = sorted(sources.values(), key=lambda x: -x["words"])
             for s in srcs: s["percent"] = round(100*s["words"]/tot, 1)
+            citations = verify_citations(text, enabled=bool(verify_refs))
             report = {"id": jid, "title": title, "filename": filename, "created": time.time(),
                       "words": tot, "similarity": {"percent": round(100*(exact_w+para_w)/tot, 1),
                       "exact_percent": round(100*exact_w/tot, 1), "paraphrase_percent": round(100*para_w/tot, 1),
-                      "excluded_percent": round(100*excl_w/tot, 1), "sources": srcs, "web": web_check(sents, providers=web_sources)},
+                      "excluded_percent": round(100*excl_w/tot, 1), "sources": srcs,
+                      "web": web_check(sents, providers=web_sources, embeddings=E),
+                      "citations": citations},
                       "ai": {k: v for k, v in ai.items() if k not in ("sentence_probs", "sentence_flagged")},
-                      "sentences": [{"text": t, "ai_prob": ai["sentence_probs"][i],
+                      "sentences": [{"text": t, "words": words[i], "ai_prob": ai["sentence_probs"][i],
                                      "ai_flag": bool(ai["sentence_flagged"][i]) if "sentence_flagged" in ai else ai["sentence_probs"][i] >= 0.5,
+                                     "rule_hits": rule_hits[i],
                                      "excluded": sim[i].get("excluded"), "exact": sim[i]["exact"],
                                      "paraphrase": sim[i]["paraphrase"]} for i, (_, _, t) in enumerate(sents)]}
             if add:

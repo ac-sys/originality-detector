@@ -18,6 +18,15 @@ def build_pdf(report, path):
             ["Models", escape(", ".join(f"{k}: {v}" for k, v in ai.get("models", {}).items()))]]
     t = Table(rows, colWidths=[170, 330]); t.setStyle(TableStyle([("GRID", (0,0), (-1,-1), .3, colors.grey), ("FONTSIZE", (0,0), (-1,-1), 9)]))
     el += [t, Spacer(1, 6), Paragraph("<i>" + escape(ai["disclaimer"]) + "</i>", body), Spacer(1, 8)]
+    if ai.get("rules_applied"):
+        el.append(Paragraph("Custom English AI Rules Triggered", st["Heading3"]))
+        for r in ai["rules_applied"]:
+            el.append(Paragraph(escape(f"[{r['effect']}] {r['instruction']} ({r['sentences_matched']} sentences)"), body))
+    cites = sim.get("citations") or {}
+    if cites.get("enabled") and cites.get("unverified"):
+        el.append(Paragraph("Unverified / Potential Hallucinated Citations", st["Heading3"]))
+        for u in cites["unverified"]:
+            el.append(Paragraph(escape(f"• {u['reference']}"), body))
     if sim["sources"]:
         el.append(Paragraph("Matched sources", st["Heading3"]))
         for s in sim["sources"]: el.append(Paragraph(escape(f"#{s['doc']} {s['title']} — {s['percent']}% of words"), body))
