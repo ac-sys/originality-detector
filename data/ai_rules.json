@@ -1,0 +1,97 @@
+[
+  {
+    "id": "rule-ai-cliches",
+    "instruction": "Flag sentences containing typical AI boilerplate phrases such as 'delve into', 'rich tapestry', 'testament to', 'moreover, it is important to note', 'underscores the importance', 'it is worth noting that', 'crucial role in shaping'",
+    "effect": "increase_ai",
+    "weight": 0.25,
+    "enabled": true,
+    "created": 1763380000.0,
+    "compiled": {
+      "effect": "increase_ai",
+      "weight": 0.25,
+      "phrases": [
+        "delve into",
+        "rich tapestry",
+        "testament to",
+        "moreover, it is important to note",
+        "underscores the importance",
+        "it is worth noting that",
+        "crucial role in shaping"
+      ],
+      "structural": [],
+      "min_words": null,
+      "max_words": null,
+      "semantic_query": null
+    }
+  },
+  {
+    "id": "rule-ai-uniform-burstiness",
+    "instruction": "Flag passages with uniform sentence length and low burstiness typical of AI prose",
+    "effect": "increase_ai",
+    "weight": 0.1,
+    "enabled": true,
+    "created": 1763380000.5,
+    "compiled": {
+      "effect": "increase_ai",
+      "weight": 0.1,
+      "phrases": [],
+      "structural": [
+        "uniform_length"
+      ],
+      "min_words": null,
+      "max_words": null,
+      "semantic_query": null
+    }
+  },
+  {
+    "id": "rule-fieldwork-human",
+    "instruction": "Reduce AI score when sentences contain specific fieldwork or empirical phrases such as 'in our fieldwork', 'during my interview', 'we measured', 'participants reported that', 'in our laboratory'",
+    "effect": "decrease_ai",
+    "weight": 0.2,
+    "enabled": true,
+    "created": 1763380001.0,
+    "compiled": {
+      "effect": "decrease_ai",
+      "weight": 0.2,
+      "phrases": [
+        "in our fieldwork",
+        "during my interview",
+        "we measured",
+        "participants reported that",
+        "in our laboratory"
+      ],
+      "structural": [],
+      "min_words": null,
+      "max_words": null,
+      "semantic_query": null
+    }
+  },
+  {
+    "id": "rule-exempt-code-stats",
+    "instruction": "Do not flag technical formulas, statistical notation, or code snippets such as 'p < 0.05', 'p < 0.01', 'SELECT * FROM', 'def ', 'import numpy', 'import torch', 'https://', 'doi:'",
+    "effect": "exempt",
+    "weight": 1.0,
+    "enabled": true,
+    "created": 1763380002.0,
+    "compiled": {
+      "effect": "exempt",
+      "weight": 1.0,
+      "phrases": [
+        "p < 0.05",
+        "p < 0.01",
+        "select * from",
+        "def",
+        "import numpy",
+        "import torch",
+        "https://",
+        "doi:"
+      ],
+      "structural": [
+        "code_or_math"
+      ],
+      "min_words": null,
+      "max_words": null,
+      "semantic_query": null
+    }
+  }
+]
