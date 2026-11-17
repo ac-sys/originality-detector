@@ -1,33 +1,680 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Originality Detector</title><style>
-body{font-family:system-ui,sans-serif;max-width:980px;margin:20px auto;padding:0 12px;color:#222}
-.card{border:1px solid #ddd;border-radius:8px;padding:14px;margin:12px 0}
-.big{font-size:32px;font-weight:700}.row{display:flex;gap:12px;flex-wrap:wrap}.row .card{flex:1;min-width:200px}
-.ex{background:#ffd6d6}.pa{background:#ffe9b3}.ai{background:#dcd6ff}.s{cursor:help}
-small{color:#666}button{padding:8px 14px}#bar{height:8px;background:#eee;border-radius:4px}#bar div{height:8px;background:#3a7;border-radius:4px;width:0}
-</style></head><body>
-<h2>Originality Detector <small>similarity + AI-writing evidence (MVP)</small></h2>
-<div class="card"><form id="f"><input type="file" name="file" accept=".pdf,.docx,.txt" required>
-<input name="title" placeholder="Title (optional)"> <label><input type="checkbox" name="add" checked> add to library</label>
-<button>Check</button></form><div id="st"></div><div id="bar"><div></div></div></div>
-<div id="out"></div>
-<div class="card"><b>Models</b> <small id="models"></small></div>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Originality Detector v3.2 — Similarity & AI-Writing Evidence</title>
+<style>
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --muted: #64748b;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --exact-bg: #fee2e2;
+  --exact-border: #ef4444;
+  --para-bg: #fef3c7;
+  --para-border: #f59e0b;
+  --ai-bg: #ede9fe;
+  --ai-border: #8b5cf6;
+  --excl-bg: #f1f5f9;
+  --success: #10b981;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+header h1 {
+  font-size: 20px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.badge {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  background: #dbeafe;
+  color: #1e40af;
+}
+.badge.strict { background: #fee2e2; color: #991b1b; }
+.badge.possible { background: #fef3c7; color: #92400e; }
+.badge.clean { background: #dcfce7; color: #166534; }
+nav {
+  display: flex;
+  gap: 6px;
+}
+nav button {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--muted);
+}
+nav button.active {
+  background: #eff6ff;
+  color: var(--primary);
+  border-color: #bfdbfe;
+}
+main {
+  max-width: 1240px;
+  margin: 20px auto;
+  padding: 0 20px 40px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.row > .card {
+  flex: 1;
+  min-width: 260px;
+  margin-bottom: 0;
+}
+.big {
+  font-size: 34px;
+  font-weight: 700;
+  margin: 4px 0;
+}
+small, .muted { color: var(--muted); font-size: 13px; }
+input[type="text"], input[type="file"], textarea, select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+}
+button.btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+button.btn:hover { background: var(--primary-hover); }
+button.btn-outline {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+button.btn-danger {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.mode-switch {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.mode-switch button {
+  border: none;
+  background: var(--surface);
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.mode-switch button.active {
+  background: var(--primary);
+  color: #fff;
+}
+#bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+#bar div {
+  height: 100%;
+  background: var(--primary);
+  width: 0;
+  transition: width 0.25s ease;
+}
+.split-view {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .split-view { grid-template-columns: 1fr; }
+}
+.inspector {
+  position: sticky;
+  top: 16px;
+}
+.s {
+  padding: 2px 3px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+.s:hover, .s.selected {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+.ex { background: var(--exact-bg); border-bottom: 2px solid var(--exact-border); }
+.pa { background: var(--para-bg); border-bottom: 2px solid var(--para-border); }
+.ai { background: var(--ai-bg); border-bottom: 2px solid var(--ai-border); }
+.excl { background: var(--excl-bg); color: var(--muted); }
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0 14px;
+}
+.filter-bar button {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.filter-bar button.active {
+  background: var(--text);
+  color: #fff;
+  border-color: var(--text);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+th, td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+}
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+.hidden { display: none !important; }
+.quote-box {
+  background: #f8fafc;
+  border-left: 3px solid var(--primary);
+  padding: 10px 12px;
+  font-size: 13px;
+  border-radius: 4px;
+  margin-top: 8px;
+  white-space: pre-wrap;
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>
+    Originality Detector
+    <span class="badge">v3.2</span>
+    <small id="models-pill" class="muted"></small>
+  </h1>
+  <nav>
+    <button class="active" onclick="switchTab('check', this)">Check Document</button>
+    <button onclick="switchTab('history', this)">Past Reports</button>
+    <button onclick="switchTab('library', this)">Reference Library</button>
+    <button onclick="switchTab('admin', this)">Appeals & Models</button>
+  </nav>
+</header>
+
+<main>
+  <!-- TAB 1: CHECK DOCUMENT -->
+  <section id="tab-check">
+    <div class="card">
+      <div class="mode-switch">
+        <button type="button" id="mode-file-btn" class="active" onclick="setSubmitMode('file')">Upload File (.pdf, .docx, .txt, .md)</button>
+        <button type="button" id="mode-text-btn" onclick="setSubmitMode('text')">Paste Text</button>
+      </div>
+      <form id="f">
+        <div id="file-input-wrap" style="margin-bottom:12px">
+          <input type="file" name="file" id="file-input" accept=".pdf,.docx,.txt,.md">
+        </div>
+        <div id="text-input-wrap" class="hidden" style="margin-bottom:12px">
+          <textarea name="text" id="text-input" rows="6" placeholder="Paste student essay or article text here (minimum ~150 words recommended for AI detection)..."></textarea>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div style="flex:1;min-width:220px">
+            <input type="text" name="title" placeholder="Document Title (optional)">
+          </div>
+          <label style="font-size:14px;display:flex;align-items:center;gap:6px">
+            <input type="checkbox" name="add" checked> Add to library
+          </label>
+          <label style="font-size:14px;display:flex;align-items:center;gap:6px" title="Query Wikipedia and OpenAlex for external matches">
+            <input type="checkbox" name="web_check"> Live Web Check (Wikipedia + OpenAlex)
+          </label>
+          <button type="submit" class="btn" id="submit-btn">Run Originality Check</button>
+        </div>
+      </form>
+      <div id="st" style="margin-top:10px;font-size:14px;font-weight:500"></div>
+      <div id="bar"><div></div></div>
+    </div>
+
+    <div id="out"></div>
+  </section>
+
+  <!-- TAB 2: PAST REPORTS -->
+  <section id="tab-history" class="hidden">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="margin:0">Generated Reports</h3>
+        <button class="btn-outline" onclick="loadHistory()">Refresh</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Report ID</th>
+            <th>Title</th>
+            <th>Words</th>
+            <th>Similarity</th>
+            <th>AI Likelihood</th>
+            <th>Verdict</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="history-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TAB 3: REFERENCE LIBRARY -->
+  <section id="tab-library" class="hidden">
+    <div class="card">
+      <h3 style="margin-top:0">Add Reference Document to Corpus</h3>
+      <form id="lib-form" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <div style="flex:1;min-width:220px"><input type="file" name="file" accept=".pdf,.docx,.txt,.md" required></div>
+        <div style="flex:1;min-width:200px"><input type="text" name="title" placeholder="Reference Title (optional)"></div>
+        <div style="width:160px"><input type="text" name="source" value="reference" placeholder="Source tag"></div>
+        <button class="btn">Add to Library</button>
+      </form>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="margin:0">Indexed Library Documents (<span id="lib-count">0</span>)</h3>
+        <button class="btn-outline" onclick="loadLibrary()">Refresh</button>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Doc ID</th><th>Title</th><th>Source</th><th>Action</th></tr>
+        </thead>
+        <tbody id="lib-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TAB 4: APPEALS & MODELS -->
+  <section id="tab-admin" class="hidden">
+    <div class="row" style="margin-bottom:16px">
+      <div class="card">
+        <h3 style="margin-top:0">Active Model Registry</h3>
+        <pre id="reg-box" style="background:#f8fafc;padding:12px;border-radius:6px;font-size:12px;overflow:auto"></pre>
+        <button class="btn-outline" onclick="rollbackRegistry()">Rollback to Previous Model Config</button>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Student / Staff Appeals</h3>
+        <div id="appeals-box"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
 <script>
-const $=s=>document.querySelector(s);
-fetch('/api/health').then(r=>r.json()).then(h=>$('#models').textContent=JSON.stringify(h.models)+' | library docs: '+h.library_docs);
-$('#f').onsubmit=async e=>{e.preventDefault();const fd=new FormData();const f=e.target;
- fd.append('file',f.file.files[0]);fd.append('title',f.title.value);fd.append('add_to_library',f.add.checked);
- const {job_id}=await (await fetch('/api/submit',{method:'POST',body:fd})).json();poll(job_id)};
-async function poll(id){const j=await (await fetch('/api/jobs/'+id)).json();$('#st').textContent=j.status+(j.sentences?' ('+j.sentences+' sentences)':'')+(j.error?': '+j.error:'');
- $('#bar div').style.width=(j.progress*100)+'%';if(j.status=='done')show(id);else if(j.status!='error')setTimeout(()=>poll(id),1000)}
-const esc=t=>t.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-async function show(id){const r=await (await fetch('/api/reports/'+id)).json();const a=r.ai,s=r.similarity;
- let h=`<div class="row"><div class="card"><small>Similarity</small><div class="big">${s.percent}%</div><small>exact ${s.exact_percent}% · paraphrase ${s.paraphrase_percent}% · excluded ${s.excluded_percent||0}%</small>${s.web&&s.web.enabled?'<br><small>web matches: '+s.web.matches.length+'</small>':''}</div>
- <div class="card"><small>AI-writing likelihood</small><div class="big">${a.probability==null?'n/a':Math.round(a.probability*100)+'%'}</div><small>± ${Math.round(a.uncertainty*100)} pts · ${Math.round(a.share_flagged*100)}% of text AI-like ${a.verdict_text?'<br><b>'+esc(a.verdict_text)+'</b>':''} ${a.low_confidence?'· <b>low confidence (short text)</b>':''}</small></div></div>
- <div class="card"><small><i>${esc(a.disclaimer)}</i></small><br><a href="/api/reports/${id}/pdf">Download PDF report</a> · <a href="#" onclick="appeal('${id}');return false">Lodge an appeal</a></div>`;
- if(s.sources.length)h+='<div class="card"><b>Matched sources</b><ul>'+s.sources.map(x=>`<li>#${x.doc} ${esc(x.title)} — ${x.percent}%</li>`).join('')+'</ul></div>';
- h+='<div class="card"><b>Evidence</b> <small><span class="ex">exact</span> <span class="pa">paraphrase</span> <span class="ai">AI-like</span> — hover a sentence for details</small><p>'+
- r.sentences.map(x=>{let c='',t='AI '+x.ai_prob;if(x.exact){c='ex';t='exact match: #'+x.exact.doc+' '+x.exact.title}else if(x.paraphrase){c='pa';t='paraphrase '+x.paraphrase.score+' of #'+x.paraphrase.doc+': '+x.paraphrase.matched_text}else if(x.excluded){t='excluded: '+x.excluded}else if(x.ai_flag){c='ai';t='AI-like passage, p='+x.ai_prob};if(x.exact)t+=' | source: '+(x.exact.matched_text||'');
- return `<span class="s ${c}" title="${esc(t).replace(/"/g,'&quot;')}">${esc(x.text)}</span> `}).join('')+'</p></div>';$('#out').innerHTML=h}
-async function appeal(id){const reason=prompt('Reason for appeal');if(!reason)return;await fetch('/api/appeals/'+id,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reason})});alert('Appeal recorded for human review')}
-</script></body></html>
+const $ = s => document.querySelector(s);
+let submitMode = 'file';
+let currentReport = null;
+let currentFilter = 'all';
+
+const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+async function refreshHealth() {
+  try {
+    const h = await (await fetch('/api/health')).json();
+    const m = h.models || {};
+    $('#models-pill').textContent = `${m.classifier || ''} + ${m.classifier2 || 'single'} | sim: ${h.similarity || ''} | ${h.library_docs} docs`;
+  } catch (e) {}
+}
+refreshHealth();
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+  $(`#tab-${tab}`).classList.remove('hidden');
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (tab === 'history') loadHistory();
+  if (tab === 'library') loadLibrary();
+  if (tab === 'admin') loadAdmin();
+}
+
+function setSubmitMode(mode) {
+  submitMode = mode;
+  $('#mode-file-btn').classList.toggle('active', mode === 'file');
+  $('#mode-text-btn').classList.toggle('active', mode === 'text');
+  $('#file-input-wrap').classList.toggle('hidden', mode !== 'file');
+  $('#text-input-wrap').classList.toggle('hidden', mode !== 'text');
+}
+
+$('#f').onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target;
+  const fd = new FormData();
+  if (submitMode === 'file') {
+    if (!f.file.files[0]) return alert('Please choose a file to upload.');
+    fd.append('file', f.file.files[0]);
+  } else {
+    if (!f.text.value.trim()) return alert('Please paste text to check.');
+    fd.append('text', f.text.value);
+  }
+  fd.append('title', f.title.value);
+  fd.append('add_to_library', f.add.checked);
+  if (f.web_check.checked) fd.append('web_sources', 'wikipedia,openalex');
+  $('#submit-btn').disabled = true;
+  $('#st').textContent = 'Submitting...';
+  $('#bar div').style.width = '5%';
+  try {
+    const res = await fetch('/api/submit', {method: 'POST', body: fd});
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({detail: res.statusText}));
+      throw new Error(err.detail || 'Submission failed');
+    }
+    const {job_id} = await res.json();
+    poll(job_id);
+  } catch (err) {
+    $('#st').textContent = 'Error: ' + err.message;
+    $('#submit-btn').disabled = false;
+  }
+};
+
+async function poll(id) {
+  const j = await (await fetch('/api/jobs/' + id)).json();
+  $('#st').textContent = `${j.status}${j.sentences ? ' (' + j.sentences + ' sentences)' : ''}${j.error ? ': ' + j.error : ''}`;
+  $('#bar div').style.width = ((j.progress || 0) * 100) + '%';
+  if (j.status === 'done') {
+    $('#submit-btn').disabled = false;
+    refreshHealth();
+    show(id);
+  } else if (j.status === 'error') {
+    $('#submit-btn').disabled = false;
+  } else {
+    setTimeout(() => poll(id), 800);
+  }
+}
+
+function verdictBadge(verdict) {
+  if (verdict === 'likely_ai_strict') return '<span class="badge strict">Likely AI (Strict 1% FPR)</span>';
+  if (verdict === 'possible_ai') return '<span class="badge possible">Possible AI (2% FPR)</span>';
+  return '<span class="badge clean">No Strong AI Signal</span>';
+}
+
+async function show(id) {
+  const r = await (await fetch('/api/reports/' + id)).json();
+  currentReport = r;
+  currentFilter = 'all';
+  renderReport();
+}
+
+function setFilter(flt) {
+  currentFilter = flt;
+  renderReport();
+}
+
+function renderReport() {
+  const r = currentReport;
+  if (!r) return;
+  const a = r.ai || {}, s = r.similarity || {};
+  const feats = a.features ? Object.entries(a.features).map(([k, v]) => `${k}: ${v}`).join(' · ') : '';
+  let h = `
+  <div class="row" style="margin-bottom:16px">
+    <div class="card">
+      <small>Overall Similarity</small>
+      <div class="big">${s.percent}%</div>
+      <small>Exact: <b>${s.exact_percent}%</b> · Paraphrase: <b>${s.paraphrase_percent}%</b> · Excluded (Quotes/Bib): <b>${s.excluded_percent || 0}%</b></small>
+      ${s.web && s.web.enabled ? `<br><small>Live Web Matches: <b>${(s.web.matches || []).length}</b> (${(s.web.providers || []).join(', ')})</small>` : ''}
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <small>AI-Writing Likelihood</small>
+        ${verdictBadge(a.verdict)}
+      </div>
+      <div class="big">${a.probability == null ? 'n/a' : Math.round(a.probability * 100) + '%'}</div>
+      <small>± ${Math.round((a.uncertainty || 0) * 100)} pts · <b>${Math.round((a.share_flagged || 0) * 100)}%</b> of text in flagged AI windows ${a.low_confidence ? '· <b>Low confidence (&lt;150 words)</b>' : ''}</small>
+      ${feats ? `<br><small class="muted">Model logits (${ esc(feats) })</small>` : ''}
+    </div>
+  </div>
+  <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <small><i>${esc(a.disclaimer)}</i></small>
+    <div style="display:flex;gap:8px">
+      <a class="btn-outline" style="text-decoration:none" href="/api/reports/${r.id}/pdf">Download PDF Report</a>
+      <button class="btn-outline" onclick="appeal('${r.id}')">Lodge an Appeal</button>
+    </div>
+  </div>`;
+
+  if ((s.sources && s.sources.length) || (s.web && s.web.matches && s.web.matches.length)) {
+    h += `<div class="card"><b>Matched Sources</b><ul style="margin:8px 0 0;padding-left:20px">`;
+    (s.sources || []).forEach(x => {
+      h += `<li><b>#${x.doc} ${esc(x.title)}</b> — ${x.percent}% (${x.words} words)</li>`;
+    });
+    if (s.web && s.web.matches) {
+      s.web.matches.forEach(w => {
+        h += `<li><b>[Web: ${esc(w.provider)}]</b> <a href="${esc(w.url)}" target="_blank" rel="noopener">${esc(w.title)}</a> — score ${w.score} (${w.type})</li>`;
+      });
+    }
+    h += `</ul></div>`;
+  }
+
+  const counts = {
+    all: r.sentences.length,
+    exact: r.sentences.filter(x => x.exact).length,
+    para: r.sentences.filter(x => !x.exact && x.paraphrase).length,
+    ai: r.sentences.filter(x => x.ai_flag).length,
+    excl: r.sentences.filter(x => x.excluded).length
+  };
+
+  h += `
+  <div class="split-view">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <b>Document Evidence (${r.words} words, ${r.sentences.length} sentences)</b>
+        <small>Click any sentence to inspect source & AI metrics</small>
+      </div>
+      <div class="filter-bar">
+        <button class="${currentFilter==='all'?'active':''}" onclick="setFilter('all')">All (${counts.all})</button>
+        <button class="${currentFilter==='exact'?'active':''}" onclick="setFilter('exact')">Exact Match (${counts.exact})</button>
+        <button class="${currentFilter==='para'?'active':''}" onclick="setFilter('para')">Paraphrase (${counts.para})</button>
+        <button class="${currentFilter==='ai'?'active':''}" onclick="setFilter('ai')">AI-Flagged (${counts.ai})</button>
+        <button class="${currentFilter==='excl'?'active':''}" onclick="setFilter('excl')">Excluded (${counts.excl})</button>
+      </div>
+      <p style="line-height:1.85;margin:0">`;
+
+  r.sentences.forEach((x, idx) => {
+    if (currentFilter === 'exact' && !x.exact) return;
+    if (currentFilter === 'para' && (x.exact || !x.paraphrase)) return;
+    if (currentFilter === 'ai' && !x.ai_flag) return;
+    if (currentFilter === 'excl' && !x.excluded) return;
+    let c = '';
+    if (x.exact) c = 'ex';
+    else if (x.paraphrase) c = 'pa';
+    else if (x.excluded) c = 'excl';
+    else if (x.ai_flag) c = 'ai';
+    h += `<span class="s ${c}" data-idx="${idx}" onclick="inspectSentence(${idx})">${esc(x.text)}</span> `;
+  });
+
+  h += `</p></div>
+    <div class="card inspector" id="inspector-card">
+      <b>Sentence Inspector</b>
+      <p class="muted" style="margin-top:6px">Click any sentence in the document on the left to inspect its AI probability, matched source document, and side-by-side source passage.</p>
+    </div>
+  </div>`;
+  $('#out').innerHTML = h;
+}
+
+function inspectSentence(idx) {
+  if (!currentReport) return;
+  document.querySelectorAll('.s.selected').forEach(el => el.classList.remove('selected'));
+  const el = document.querySelector(`.s[data-idx="${idx}"]`);
+  if (el) el.classList.add('selected');
+  const s = currentReport.sentences[idx];
+  let html = `<b>Sentence #${idx + 1}</b>
+    <div class="quote-box">${esc(s.text)}</div>
+    <div style="margin-top:12px;font-size:13px">
+      <div><b>Window AI Probability:</b> ${Math.round((s.ai_prob || 0) * 100)}% ${s.ai_flag ? '<span class="badge possible">Flagged AI Window</span>' : ''}</div>`;
+  if (s.excluded) {
+    html += `<div style="margin-top:8px"><b>Excluded:</b> <span class="badge">${esc(s.excluded)}</span> (ignored in similarity score)</div>`;
+  }
+  if (s.exact) {
+    html += `<hr style="border:none;border-top:1px solid var(--border);margin:10px 0">
+      <div><b>Exact Match:</b> Doc #${s.exact.doc} — ${esc(s.exact.title)} (coverage ${Math.round((s.exact.coverage || 1)*100)}%)</div>
+      <div class="quote-box" style="border-left-color:var(--exact-border)">${esc(s.exact.matched_text || '')}</div>`;
+  } else if (s.paraphrase) {
+    html += `<hr style="border:none;border-top:1px solid var(--border);margin:10px 0">
+      <div><b>Paraphrase Match:</b> Doc #${s.paraphrase.doc} — ${esc(s.paraphrase.title)}</div>
+      <div><b>Cosine Score:</b> ${s.paraphrase.score} ${s.paraphrase.stage ? `(${esc(s.paraphrase.stage)} stage)` : ''}</div>
+      <div class="quote-box" style="border-left-color:var(--para-border)">${esc(s.paraphrase.matched_text || '')}</div>`;
+  }
+  html += `</div>`;
+  $('#inspector-card').innerHTML = html;
+}
+
+async function appeal(id) {
+  const by = prompt('Your name / student ID (optional):') || '';
+  const reason = prompt('Reason for appeal (e.g. draft history link, notes):');
+  if (!reason) return;
+  await fetch('/api/appeals/' + id, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({by, reason})
+  });
+  alert('Appeal recorded for human review.');
+}
+
+async function loadHistory() {
+  const list = await (await fetch('/api/reports')).json();
+  $('#history-tbody').innerHTML = list.map(r => `
+    <tr>
+      <td><code>${esc(r.id)}</code></td>
+      <td>${esc(r.title)}</td>
+      <td>${r.words}</td>
+      <td><b>${r.similarity_percent}%</b></td>
+      <td>${r.ai_probability == null ? 'n/a' : Math.round(r.ai_probability * 100) + '%'}</td>
+      <td>${verdictBadge(r.ai_verdict)}</td>
+      <td><small>${new Date(r.created * 1000).toLocaleString()}</small></td>
+      <td>
+        <button class="btn-outline" onclick="openReportFromHistory('${esc(r.id)}')">View</button>
+        <a class="btn-outline" style="text-decoration:none" href="/api/reports/${esc(r.id)}/pdf">PDF</a>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="8" class="muted">No reports found.</td></tr>';
+}
+
+function openReportFromHistory(id) {
+  switchTab('check', document.querySelector('nav button'));
+  show(id);
+}
+
+async function loadLibrary() {
+  const list = await (await fetch('/api/library')).json();
+  $('#lib-count').textContent = list.length;
+  $('#lib-tbody').innerHTML = list.map(d => `
+    <tr>
+      <td>#${d.id}</td>
+      <td>${esc(d.title)}</td>
+      <td><span class="badge">${esc(d.source)}</span></td>
+      <td><button class="btn-danger" onclick="deleteLibDoc(${d.id})">Delete</button></td>
+    </tr>`).join('') || '<tr><td colspan="4" class="muted">Library is empty.</td></tr>';
+}
+
+$('#lib-form').onsubmit = async e => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const res = await fetch('/api/library', {method: 'POST', body: fd});
+  if (res.ok) {
+    e.target.reset();
+    loadLibrary();
+    refreshHealth();
+  }
+};
+
+async function deleteLibDoc(id) {
+  if (!confirm(`Remove document #${id} from the reference library?`)) return;
+  await fetch('/api/library/' + id, {method: 'DELETE'});
+  loadLibrary();
+  refreshHealth();
+}
+
+async function loadAdmin() {
+  const reg = await (await fetch('/api/registry')).json();
+  $('#reg-box').textContent = JSON.stringify({
+    active: reg.active,
+    calibration_version: reg.calibration && reg.calibration.version,
+    similarity: reg.similarity,
+    history_entries: (reg.history || []).length
+  }, null, 2);
+  const apps = await (await fetch('/api/appeals')).json();
+  $('#appeals-box').innerHTML = apps.length ? apps.map((a, idx) => `
+    <div style="border-bottom:1px solid var(--border);padding:8px 0">
+      <div><b>Report:</b> <a href="#" onclick="openReportFromHistory('${esc(a.report)}');return false"><code>${esc(a.report)}</code></a> · <span class="badge">${esc(a.status)}</span></div>
+      <div style="font-size:13px;margin:4px 0">${esc(a.reason)} ${a.by ? `<small class="muted">— by ${esc(a.by)}</small>` : ''}</div>
+      <div style="display:flex;gap:6px;margin-top:4px">
+        <button class="btn-outline" onclick="resolveAppeal(${idx}, 'resolved')">Mark Resolved</button>
+        <button class="btn-outline" onclick="resolveAppeal(${idx}, 'dismissed')">Dismiss</button>
+      </div>
+    </div>`).join('') : '<p class="muted">No appeals submitted yet.</p>';
+}
+
+async function resolveAppeal(idx, status) {
+  await fetch('/api/appeals/' + idx, {
+    method: 'PATCH',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({status})
+  });
+  loadAdmin();
+}
+
+async function rollbackRegistry() {
+  if (!confirm('Roll back active detector & similarity configuration to the previous version in manifest history?')) return;
+  const res = await fetch('/api/registry/rollback', {method: 'POST'});
+  if (!res.ok) return alert('Rollback failed: ' + (await res.text()));
+  loadAdmin();
+  refreshHealth();
+}
+</script>
+</body>
+</html>

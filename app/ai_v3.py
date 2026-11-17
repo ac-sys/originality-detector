@@ -7,46 +7,64 @@ Changes vs v2 (see V3_RESULTS.md for measured effect):
     essays (disjoint from every reported ESL test set).
  4. Sentence highlighting from overlapping sliding windows (stride 1 sentence) averaged per sentence, then
     segment smoothing (isolated single-sentence flags are dropped) - better mixed human+AI localisation."""
-import math, threading
+import math, os, threading
 import numpy as np
 import torch
 
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
 class _Base:
-    batch_size = 8
+    batch_size = 16
     def logits(self, texts):
+        if not texts: return []
         out = []
-        with torch.no_grad():
+        with torch.inference_mode():
             for b in range(0, len(texts), self.batch_size):
                 out += self._batch(texts[b:b + self.batch_size])
         return out
 
 class HFClassifier(_Base):
+    batch_size = 16
     def __init__(self, spec):
         from transformers import AutoTokenizer, AutoModelForSequenceClassification
-        self.spec = spec; self.tok = AutoTokenizer.from_pretrained(spec["hf_id"])
-        self.model = AutoModelForSequenceClassification.from_pretrained(spec["hf_id"]).eval()
+        hf = spec["hf_id"]; self.spec = spec; self.device = DEVICE
+        try:
+            self.tok = AutoTokenizer.from_pretrained(hf, local_files_only=True)
+            self.model = AutoModelForSequenceClassification.from_pretrained(hf, local_files_only=True).to(self.device).eval()
+        except Exception:
+            self.tok = AutoTokenizer.from_pretrained(hf)
+            self.model = AutoModelForSequenceClassification.from_pretrained(hf).to(self.device).eval()
         lab = {v: int(k) for k, v in self.model.config.id2label.items()}; self.ai_idx = lab.get(spec.get("ai_label", "LABEL_1"), 1)
     def _batch(self, texts):
-        x = self.tok(texts, truncation=True, max_length=512, padding=True, return_tensors="pt")
-        lg = self.model(**x).logits.float(); return (lg[:, self.ai_idx] - lg[:, 1 - self.ai_idx]).tolist()
+        x = self.tok(texts, truncation=True, max_length=512, padding=True, return_tensors="pt").to(self.device)
+        lg = self.model(**x).logits.float(); return (lg[:, self.ai_idx] - lg[:, 1 - self.ai_idx]).cpu().tolist()
 
 class Desklib(_Base):
     """desklib/ai-text-detector-v1.01 (MIT): DeBERTa-v3-large encoder + mean pooling + linear head."""
-    batch_size = 4
+    batch_size = 8
     def __init__(self, spec):
         from transformers import AutoTokenizer, AutoConfig, AutoModel
         from huggingface_hub import hf_hub_download
         from safetensors.torch import load_file
-        hf = spec["hf_id"]; self.spec = spec
-        self.tok = AutoTokenizer.from_pretrained(hf); cfg = AutoConfig.from_pretrained(hf)
+        hf = spec["hf_id"]; self.spec = spec; self.device = DEVICE
+        try:
+            self.tok = AutoTokenizer.from_pretrained(hf, local_files_only=True)
+            cfg = AutoConfig.from_pretrained(hf, local_files_only=True)
+            st_path = hf_hub_download(hf, "model.safetensors", local_files_only=True)
+        except Exception:
+            self.tok = AutoTokenizer.from_pretrained(hf)
+            cfg = AutoConfig.from_pretrained(hf)
+            st_path = hf_hub_download(hf, "model.safetensors")
         self.enc = AutoModel.from_config(cfg); self.head = torch.nn.Linear(cfg.hidden_size, 1)
-        sd = load_file(hf_hub_download(hf, "model.safetensors"))
-        missing = self.enc.load_state_dict({k[6:]: v for k, v in sd.items() if k.startswith("model.")}, strict=False)
-        self.head.load_state_dict({k[11:]: v for k, v in sd.items() if k.startswith("classifier.")}); self.enc.eval()
+        sd = load_file(st_path)
+        self.enc.load_state_dict({k[6:]: v for k, v in sd.items() if k.startswith("model.")}, strict=False)
+        self.head.load_state_dict({k[11:]: v for k, v in sd.items() if k.startswith("classifier.")})
+        self.enc = self.enc.to(self.device).eval()
+        self.head = self.head.to(self.device).eval()
     def _batch(self, texts):
-        x = self.tok(texts, truncation=True, max_length=512, padding=True, return_tensors="pt")
+        x = self.tok(texts, truncation=True, max_length=512, padding=True, return_tensors="pt").to(self.device)
         h = self.enc(**x).last_hidden_state; m = x["attention_mask"].unsqueeze(-1).float()
-        return self.head((h * m).sum(1) / m.sum(1).clamp_min(1e-9))[:, 0].tolist()
+        return self.head((h * m).sum(1) / m.sum(1).clamp_min(1e-9))[:, 0].cpu().tolist()
 
 PLUGINS_V3 = {"hf_sequence_classifier": HFClassifier, "desklib_deberta": Desklib}
 
@@ -86,9 +104,21 @@ def block_features(dets, cal, sentences):
     B[i] = {model_key: logit of the ~300-word chunk containing sentence i} (doc score = word-weighted mean)."""
     n = len(sentences); B = [dict() for _ in range(n)]
     ch = chunks(sentences, cal.get("chunk_words", 300), cal.get("min_tail", 120))
+    ch_texts = [" ".join(sentences[i] for i in g) for g in ch]
+    early_exit = os.environ.get("DETECTOR_FAST_CPU", "1") == "1" and cal["doc"].get("rule") == "and"
     for k in cal["doc"]["weights"]:
-        for v, g in zip(dets[k].logits([" ".join(sentences[i] for i in g) for g in ch]), ch):
-            for i in g: B[i][k] = float(v)
+        if k == "dk" and early_exit and "fk" in B[0] and isinstance(dets.get("dk"), Desklib):
+            # AND-rule early exit: only run heavy DeBERTa-v3-large on chunks where fakespot is not strongly negative
+            cand_idx = [ci for ci, g in enumerate(ch) if B[g[0]].get("fk", 0.0) >= -2.0]
+            dk_vals = [-4.0] * len(ch)
+            if cand_idx:
+                for ci, v in zip(cand_idx, dets["dk"].logits([ch_texts[ci] for ci in cand_idx])):
+                    dk_vals[ci] = float(v)
+            for v, g in zip(dk_vals, ch):
+                for i in g: B[i][k] = float(v)
+        else:
+            for v, g in zip(dets[k].logits(ch_texts), ch):
+                for i in g: B[i][k] = float(v)
     wi = windows(sentences, cal.get("window_sents", 3), cal.get("window_max_words", 90))
     wl = {k: dets[k].logits([" ".join(sentences[i] for i in g) for g in wi]) for k in cal["win"]["weights"]}
     acc = np.zeros(n); cnt = np.zeros(n)

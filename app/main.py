@@ -16,22 +16,35 @@ APPEALS = DATA / "appeals.json"
 MAX_BYTES = 200 * 1024 * 1024
 
 @app.get("/", response_class=HTMLResponse)
-def index(): return (BASE / "static" / "index.html").read_text()
+def index(): return (BASE / "static" / "index.html").read_text(encoding="utf-8")
 
 @app.get("/api/health")
 def health(): return {"ok": True, "library_docs": corpus.count(), "models": ensemble.versions(), "similarity": corpus.p.get("id")}
 
 @app.post("/api/submit")
-async def submit(file: UploadFile = File(...), title: str = Form(""), add_to_library: bool = Form(True)):
-    data = await file.read()
-    if len(data) > MAX_BYTES: raise HTTPException(413, "File too large")
-    if not file.filename.lower().endswith((".pdf", ".docx", ".txt", ".md")): raise HTTPException(400, "Use PDF, DOCX or TXT")
-    return {"job_id": jobs.submit(file.filename, data, title or file.filename, add_to_library)}
+async def submit(file: UploadFile = File(None), text: str = Form(""), title: str = Form(""), add_to_library: bool = Form(True), web_sources: str = Form("")):
+    if file is not None and file.filename:
+        data = await file.read()
+        fname = file.filename
+        if len(data) > MAX_BYTES: raise HTTPException(413, "File too large")
+        if not fname.lower().endswith((".pdf", ".docx", ".txt", ".md")): raise HTTPException(400, "Use PDF, DOCX, TXT or MD")
+    elif text.strip():
+        data = text.encode("utf-8")
+        fname = (title.strip() or "pasted-text") + ".txt"
+    else:
+        raise HTTPException(400, "Provide a file or pasted text")
+    ws = [p.strip() for p in web_sources.split(",") if p.strip()] if web_sources else None
+    return {"job_id": jobs.submit(fname, data, title or fname, add_to_library, web_sources=ws)}
 
 @app.get("/api/jobs/{jid}")
 def job(jid: str):
-    if jid not in jobs.jobs: raise HTTPException(404)
-    return jobs.jobs[jid]
+    if jid in jobs.jobs: return jobs.jobs[jid]
+    if jobs.report(jid): return {"id": jid, "status": "done", "progress": 1.0}
+    raise HTTPException(404)
+
+@app.get("/api/reports")
+def list_reports(limit: int = 50):
+    return jobs.list_reports(limit=limit)
 
 @app.get("/api/reports/{jid}")
 def report(jid: str):
@@ -55,16 +68,30 @@ async def add_reference(file: UploadFile = File(...), title: str = Form(""), sou
 def library():
     return [{"id": i, "title": t, "source": s} for i, (t, s) in corpus.titles().items()]
 
+@app.delete("/api/library/{doc_id}")
+def delete_library_doc(doc_id: int):
+    if not corpus.delete(doc_id): raise HTTPException(404, "Document not found")
+    return {"ok": True, "deleted": doc_id}
+
 @app.post("/api/appeals/{jid}")
 def appeal(jid: str, payload: dict):
     """Student/staff appeal against a report: stored for human review (evidence-first workflow)."""
     if not jobs.report(jid): raise HTTPException(404)
-    items = json.loads(APPEALS.read_text()) if APPEALS.exists() else []
+    items = json.loads(APPEALS.read_text(encoding="utf-8")) if APPEALS.exists() else []
     items.append({"report": jid, "time": time.time(), "status": "open", "by": payload.get("by", ""), "reason": payload.get("reason", "")})
-    APPEALS.write_text(json.dumps(items, indent=2)); return {"ok": True, "open_appeals": sum(i["status"] == "open" for i in items)}
+    APPEALS.write_text(json.dumps(items, indent=2), encoding="utf-8"); return {"ok": True, "open_appeals": sum(i["status"] == "open" for i in items)}
 
 @app.get("/api/appeals")
-def appeals(): return json.loads(APPEALS.read_text()) if APPEALS.exists() else []
+def appeals(): return json.loads(APPEALS.read_text(encoding="utf-8")) if APPEALS.exists() else []
+
+@app.patch("/api/appeals/{idx}")
+def update_appeal(idx: int, payload: dict):
+    items = json.loads(APPEALS.read_text(encoding="utf-8")) if APPEALS.exists() else []
+    if idx < 0 or idx >= len(items): raise HTTPException(404, "Appeal not found")
+    if "status" in payload: items[idx]["status"] = payload["status"]
+    if "resolution" in payload: items[idx]["resolution"] = payload["resolution"]
+    APPEALS.write_text(json.dumps(items, indent=2), encoding="utf-8")
+    return {"ok": True, "appeal": items[idx]}
 
 # ---- model registry / updates ----
 @app.get("/api/registry")

@@ -91,3 +91,19 @@ def test_web_query_selection():
     from app.websources import pick_queries, check_web
     s = split_sentences(A * 3); assert len(pick_queries(s, 2)) <= 2
     assert check_web(s, providers=[])["enabled"] is False
+
+def test_library_delete_and_paste_submit(tmp_path):
+    c = Corpus(tmp_path / "del.db")
+    did = c.add("temp_doc", A, split_sentences(A))
+    assert c.count() == 1 and c.delete(did) is True and c.count() == 0
+    assert c.delete(99999) is False
+    from fastapi.testclient import TestClient
+    from app.main import app
+    cl = TestClient(app)
+    j = cl.post("/api/submit", data={"text": A, "title": "pasted-doc", "add_to_library": "false"}).json()["job_id"]
+    for _ in range(50):
+        if cl.get(f"/api/jobs/{j}").json()["status"] == "done": break
+        time.sleep(0.1)
+    rlist = cl.get("/api/reports").json()
+    assert any(r["id"] == j for r in rlist)
+    assert cl.patch("/api/appeals/0", json={"status": "resolved"}).json()["appeal"]["status"] == "resolved"

@@ -10,14 +10,14 @@ class JobManager:
     def __init__(self, corpus, ensemble, workers=2):
         self.corpus, self.ens = corpus, ensemble
         self.pool = ThreadPoolExecutor(workers); self.jobs = {}; self.lock = threading.Lock()
-    def submit(self, filename, data, title=None, add_to_library=True):
+    def submit(self, filename, data, title=None, add_to_library=True, web_sources=None):
         jid = uuid.uuid4().hex[:12]
         self.jobs[jid] = {"id": jid, "status": "queued", "progress": 0.0, "filename": filename, "created": time.time()}
-        self.pool.submit(self._run, jid, filename, data, title or filename, add_to_library)
+        self.pool.submit(self._run, jid, filename, data, title or filename, add_to_library, web_sources)
         return jid
     def _set(self, jid, **kw):
         with self.lock: self.jobs[jid].update(kw)
-    def _run(self, jid, filename, data, title, add):
+    def _run(self, jid, filename, data, title, add, web_sources=None):
         try:
             self._set(jid, status="extracting")
             text = normalise(extract_text(filename, data))
@@ -55,7 +55,7 @@ class JobManager:
             report = {"id": jid, "title": title, "filename": filename, "created": time.time(),
                       "words": tot, "similarity": {"percent": round(100*(exact_w+para_w)/tot, 1),
                       "exact_percent": round(100*exact_w/tot, 1), "paraphrase_percent": round(100*para_w/tot, 1),
-                      "excluded_percent": round(100*excl_w/tot, 1), "sources": srcs, "web": web_check(sents)},
+                      "excluded_percent": round(100*excl_w/tot, 1), "sources": srcs, "web": web_check(sents, providers=web_sources)},
                       "ai": {k: v for k, v in ai.items() if k not in ("sentence_probs", "sentence_flagged")},
                       "sentences": [{"text": t, "ai_prob": ai["sentence_probs"][i],
                                      "ai_flag": bool(ai["sentence_flagged"][i]) if "sentence_flagged" in ai else ai["sentence_probs"][i] >= 0.5,
@@ -63,10 +63,29 @@ class JobManager:
                                      "paraphrase": sim[i]["paraphrase"]} for i, (_, _, t) in enumerate(sents)]}
             if add:
                 report["library_doc_id"] = self.corpus.add(title, text, sents, embeddings=E)
-            (REPORTS / f"{jid}.json").write_text(json.dumps(report))
+            (REPORTS / f"{jid}.json").write_text(json.dumps(report), encoding="utf-8")
             self._set(jid, status="done", progress=1.0)
         except Exception as e:
             traceback.print_exc(); self._set(jid, status="error", error=str(e))
     def report(self, jid):
         p = REPORTS / f"{jid}.json"
-        return json.loads(p.read_text()) if p.exists() else None
+        return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
+    def list_reports(self, limit=50):
+        out = []
+        files = sorted(REPORTS.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)[:limit]
+        for p in files:
+            try:
+                r = json.loads(p.read_text(encoding="utf-8"))
+                out.append({
+                    "id": r.get("id", p.stem),
+                    "title": r.get("title", p.stem),
+                    "filename": r.get("filename", ""),
+                    "created": r.get("created", p.stat().st_mtime),
+                    "words": r.get("words", 0),
+                    "similarity_percent": r.get("similarity", {}).get("percent", 0),
+                    "ai_probability": r.get("ai", {}).get("probability"),
+                    "ai_verdict": r.get("ai", {}).get("verdict", "no_strong_signal"),
+                })
+            except Exception:
+                continue
+        return out

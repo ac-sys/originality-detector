@@ -15,7 +15,9 @@ class Registry:
         url = url or REMOTE_MANIFEST_URL
         if not url: return None
         if url.startswith("file://"):
-            return json.loads(open(url[7:]).read())
+            fp = url[7:]
+            if len(fp) > 2 and fp[0] == "/" and fp[2] == ":": fp = fp[1:]
+            with open(fp, encoding="utf-8") as fh: return json.loads(fh.read())
         with urllib.request.urlopen(url, timeout=20) as r: return json.loads(r.read())
     def check(self, url=None):
         remote = self.fetch_remote(url)

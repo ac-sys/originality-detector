@@ -33,22 +33,50 @@ def fingerprints(text, k=None, w=None):
         if idx != last: sel.append(hs[idx]); last = idx
     return sel
 
+class _HFEmbedder:
+    """Pure transformers + torch sentence embedder (mean pooling + L2 norm).
+    Avoids importing sentence_transformers/datasets/pandas (which triggers Windows App Control / Cython DLL errors)."""
+    def __init__(self, name):
+        import torch
+        from transformers import AutoTokenizer, AutoModel
+        self.torch = torch
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        try:
+            self.tok = AutoTokenizer.from_pretrained(name, local_files_only=True)
+            self.model = AutoModel.from_pretrained(name, local_files_only=True).to(self.device).eval()
+        except Exception:
+            self.tok = AutoTokenizer.from_pretrained(name)
+            self.model = AutoModel.from_pretrained(name).to(self.device).eval()
+    def encode(self, texts, batch_size=64):
+        torch = self.torch
+        out = []
+        with torch.no_grad():
+            for i in range(0, len(texts), batch_size):
+                batch = texts[i:i + batch_size]
+                x = self.tok(batch, padding=True, truncation=True, max_length=512, return_tensors="pt").to(self.device)
+                h = self.model(**x).last_hidden_state
+                m = x["attention_mask"].unsqueeze(-1).float()
+                pooled = (h * m).sum(1) / m.sum(1).clamp_min(1e-9)
+                normed = torch.nn.functional.normalize(pooled, p=2, dim=1)
+                out.append(normed.cpu().numpy().astype(np.float32))
+        return np.vstack(out) if out else np.zeros((0, P["dim"]), dtype=np.float32)
+
 class Embedder:
     _m = {}
     @classmethod
     def get(cls, name=None):
         if LIGHT_MODE: return None
         name = name or P["embed_model"]
-        if name not in cls._m:
-            from sentence_transformers import SentenceTransformer
-            cls._m[name] = SentenceTransformer(name, device="cpu")
-        return cls._m[name]
+        with _lock:
+            if name not in cls._m:
+                cls._m[name] = _HFEmbedder(name)
+            return cls._m[name]
     @classmethod
     def encode(cls, sents, name=None, prefix=None):
         m = cls.get(name); dim = P["dim"]
         if m is None or not sents: return np.zeros((len(sents), dim), dtype=np.float32)
         pre = P["query_prefix"] if prefix is None else prefix
-        return m.encode([pre + s for s in sents], batch_size=64, normalize_embeddings=True, show_progress_bar=False).astype(np.float32)
+        return m.encode([pre + s for s in sents], batch_size=64)
 
 # ---------- exclusions ----------
 _BIB = re.compile(r"^\s*(references|bibliography|works cited|reference list|sources)\s*:?\s*$", re.I)
@@ -163,6 +191,27 @@ class Corpus:
             return d
     def titles(self):
         return {r[0]: (r[1], r[2]) for r in self.db.execute("SELECT id,title,source FROM docs")}
+    def delete(self, doc_id: int):
+        """Remove a document and its sentences/fingerprints/vectors from the library."""
+        with _lock:
+            row = self.db.execute("SELECT id FROM docs WHERE id=?", (doc_id,)).fetchone()
+            if not row: return False
+            sids = [r[0] for r in self.db.execute("SELECT id FROM sents WHERE doc=?", (doc_id,)).fetchall()]
+            hs = {r[0] for r in self.db.execute("SELECT DISTINCT h FROM fp WHERE doc=?", (doc_id,)).fetchall()}
+            for h in hs:
+                self.db.execute("UPDATE fpdf SET df = MAX(0, df - 1) WHERE h=?", (h,))
+            self.db.execute("DELETE FROM fpdf WHERE df <= 0")
+            self.db.execute("DELETE FROM fp WHERE doc=?", (doc_id,))
+            self.db.execute("DELETE FROM sents WHERE doc=?", (doc_id,))
+            self.db.execute("DELETE FROM docs WHERE id=?", (doc_id,))
+            self.db.commit()
+            if sids and not LIGHT_MODE:
+                try:
+                    self.index().remove_ids(np.array(sids, dtype=np.int64))
+                    self.save_index()
+                except Exception:
+                    self._index = None
+            return True
     def _doc_text(self, d):
         r = self.db.execute("SELECT text FROM docs WHERE id=?", (d,)).fetchone(); return r[0] if r else ""
     def check(self, text, sentences, embeddings=None, exclude_doc=None, exclude_quotes=True, exclude_bibliography=True, paraphrase=True):
@@ -316,9 +365,9 @@ class Corpus:
                 res[i]["paraphrase"] = {"doc": d, "title": title(d)[0], "score": round(sc, 3), "matched_text": t[:400], "stage": "aligned"}
         return res
 
-def web_check(sentences, text=None):
+def web_check(sentences, text=None, providers=None):
     from .websources import check_web
-    return check_web(sentences)
+    return check_web(sentences, providers=providers)
 
 _ENT = re.compile(r"\b(?:[A-Z][\w'\-]*[a-z0-9][\w'\-]*|[A-Z]{2,}|\d[\d.,]*\d|\d)\b")
 _STOPCAP = {"The", "A", "An", "In", "On", "At", "This", "That", "These", "Those", "It", "He", "She", "They", "We", "His", "Her",

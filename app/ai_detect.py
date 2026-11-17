@@ -12,8 +12,12 @@ class PerplexityDetector:
         from transformers import AutoTokenizer, AutoModelForCausalLM
         import torch
         self.torch = torch; self.spec = spec
-        self.tok = AutoTokenizer.from_pretrained(spec["hf_id"])
-        self.model = AutoModelForCausalLM.from_pretrained(spec["hf_id"]).eval()
+        try:
+            self.tok = AutoTokenizer.from_pretrained(spec["hf_id"], local_files_only=True)
+            self.model = AutoModelForCausalLM.from_pretrained(spec["hf_id"], local_files_only=True).eval()
+        except Exception:
+            self.tok = AutoTokenizer.from_pretrained(spec["hf_id"])
+            self.model = AutoModelForCausalLM.from_pretrained(spec["hf_id"]).eval()
         self.ctx = min(512, getattr(self.model.config, "n_positions", 512) or 512)
     def score(self, text, sentences):
         torch = self.torch
@@ -46,8 +50,12 @@ class ClassifierDetector:
         from transformers import AutoTokenizer, AutoModelForSequenceClassification
         import torch
         self.torch = torch; self.spec = spec
-        self.tok = AutoTokenizer.from_pretrained(spec["hf_id"])
-        self.model = AutoModelForSequenceClassification.from_pretrained(spec["hf_id"]).eval()
+        try:
+            self.tok = AutoTokenizer.from_pretrained(spec["hf_id"], local_files_only=True)
+            self.model = AutoModelForSequenceClassification.from_pretrained(spec["hf_id"], local_files_only=True).eval()
+        except Exception:
+            self.tok = AutoTokenizer.from_pretrained(spec["hf_id"])
+            self.model = AutoModelForSequenceClassification.from_pretrained(spec["hf_id"]).eval()
         lab = {v: int(k) for k, v in self.model.config.id2label.items()}
         self.ai_idx = lab.get(spec.get("ai_label", "LABEL_1"), 1)
     def score(self, text, sentences, max_words=150, max_sents=None):
